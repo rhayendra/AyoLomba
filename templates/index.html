@@ -203,6 +203,7 @@
         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 18px;">
           <div style="display: flex; gap: 8px; flex-wrap: wrap;">
             <button class="btn btn-hunter btn-sm" onclick="openModal('addCompModal')">+ Tambah Cabang Lomba</button>
+            <button class="btn btn-parchment btn-sm" onclick="openModal('addPanitiaModal')">+ Tambah Akun Panitia Baru</button>
             <button class="btn btn-parchment btn-sm" onclick="closeModal('panitiaDashModal'); scrollToEl('bracketSection');">Kelola &amp; Acak Bagan</button>
           </div>
           <div style="display: flex; gap: 8px; align-items: center;">
@@ -232,7 +233,7 @@
           </h4>
           <span id="panitiaTotalRows" style="font-size: 12px; color: var(--muted); font-weight: 700;"></span>
         </div>
-        <div class="table-wrap">
+        <div class="table-wrap" style="margin-bottom: 22px;">
           <table class="data-table">
             <thead>
               <tr>
@@ -247,6 +248,27 @@
               </tr>
             </thead>
             <tbody id="panitiaParticipantsBody"></tbody>
+          </table>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; margin: 16px 0 8px;">
+          <h4 class="serif" style="font-size: 16px; color: var(--hunter-deep);">
+            4. Daftar Akun Panitia Terdaftar
+          </h4>
+          <button class="btn btn-hunter btn-sm" onclick="openModal('addPanitiaModal')">+ Tambah Panitia Baru</button>
+        </div>
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Username / ID Panitia</th>
+                <th>Nama Panitia</th>
+                <th>Jabatan / Role</th>
+                <th>Password</th>
+                <th>Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="panitiaAdminsTableBody"></tbody>
           </table>
         </div>
       </div>
@@ -278,6 +300,17 @@
             <label>Kategori Peserta</label>
             <input type="text" id="addCompCategory" class="form-control" value="Individu">
           </div>
+          <div class="form-group" style="background: #F4F1EA; padding: 10px; border-radius: 6px;">
+            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; margin-bottom: 6px;">
+              <input type="checkbox" id="addCompIsGroup" onchange="toggleAddCompGroup(this.checked)">
+              <strong>Lomba Beregu / Berkelompok (Wajib Nama Tim)</strong>
+            </label>
+            <div id="addCompGroupMinWrapper" style="display: none; margin-top: 8px;">
+              <label style="font-size: 12px; font-weight: 600;">Minimal Pendaftar dalam 1 Kelompok (termasuk Ketua):</label>
+              <input type="number" id="addCompMinMembers" class="form-control" min="2" max="50" value="2">
+              <small style="color: var(--muted); font-size: 11px;">Contoh: Futsal min 5 orang, Tarik Tambang min 8 orang.</small>
+            </div>
+          </div>
           <div class="form-group">
             <label>Kisi-Kisi &amp; Juknis Lomba *</label>
             <textarea id="addCompJuknis" class="form-control" rows="5" placeholder="Tuliskan aturan teknis, durasi, dan kriteria penilaian..." required></textarea>
@@ -303,6 +336,42 @@
             <textarea id="editJuknisTextarea" class="form-control" rows="8" required></textarea>
           </div>
           <button type="submit" class="btn btn-hunter" style="width: 100%;">Simpan Perubahan</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Add New Panitia Admin -->
+  <div class="modal-overlay" id="addPanitiaModal">
+    <div class="modal-box">
+      <div class="modal-head">
+        <h3>Tambah Akun Panitia Baru</h3>
+        <button class="close-x" onclick="closeModal('addPanitiaModal')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="alert-box alert-brass">
+          Akun panitia yang ditambahkan di sini akan langsung dapat digunakan untuk login ke Ruang Kontrol.
+        </div>
+        <form onsubmit="submitNewPanitiaAdmin(event)">
+          <div class="form-group">
+            <label>Username / ID Panitia *</label>
+            <input type="text" id="newPanitiaId" class="form-control mono" placeholder="Contoh: panitiabahasa / osis02" required>
+          </div>
+          <div class="form-group">
+            <label>Nama Lengkap Panitia / Guru *</label>
+            <input type="text" id="newPanitiaName" class="form-control" placeholder="Contoh: Bu Ratna (Kesiswaan)" required>
+          </div>
+          <div class="form-group">
+            <label>Jabatan / Peran</label>
+            <input type="text" id="newPanitiaRole" class="form-control" placeholder="Contoh: Koordinator Lomba / Juri" value="Panitia Lomba">
+          </div>
+          <div class="form-group">
+            <label>Password Akun Panitia *</label>
+            <input type="password" id="newPanitiaPw" class="form-control mono" placeholder="Tentukan password panitia" required>
+          </div>
+          <button type="submit" class="btn btn-hunter" style="width: 100%; padding: 11px;">
+            Simpan &amp; Aktifkan Akun Panitia
+          </button>
         </form>
       </div>
     </div>

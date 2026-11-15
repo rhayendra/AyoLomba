@@ -119,9 +119,44 @@
                   <label>Nomor WhatsApp / HP <small>(opsional, untuk pemanggilan lomba)</small></label>
                   <input type="tel" id="regKontak" class="form-control" placeholder="08xxxxxxxxxx">
                 </div>
+
+                <!-- Bagian Khusus Lomba Kelompok / Beregu -->
+                <div id="groupFieldsContainer" style="display: none; background: #FAF5EB; border: 1.5px dashed var(--hunter-medium); padding: 14px; border-radius: 8px; margin-bottom: 16px;">
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                    <div style="font-weight: 700; color: var(--hunter-deep); font-size: 13.5px; display: flex; align-items: center; gap: 6px;">
+                      <span>👥 Data Kelompok / Tim</span>
+                    </div>
+                    <span id="groupMinBadge" class="badge badge-brass" style="font-size: 11px;">Min 5 Anggota</span>
+                  </div>
+
+                  <div class="form-group" style="margin-bottom: 12px;">
+                    <label style="font-weight: 600;">Nama Kelompok / Tim *</label>
+                    <input type="text" id="regNamaKelompok" class="form-control" placeholder="Contoh: Garuda Muda XI-IPA 1" oninput="updateLivePass()">
+                    <small style="color: var(--muted); font-size: 11px;">Nama ini akan dicantumkan pada Bagan Turnamen dan Kartu Peserta.</small>
+                  </div>
+
+                  <div class="form-group" style="margin-bottom: 8px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                      <label style="font-weight: 600; margin-bottom: 0;">Daftar Anggota Kelompok</label>
+                      <span id="groupCountIndicator" style="font-size: 11px; font-weight: 700; color: var(--hunter-medium);">Total: 1 (Ketua)</span>
+                    </div>
+                    <div style="font-size: 11px; color: var(--muted); margin-bottom: 8px;">
+                      Pendaftar di atas bertindak sebagai <strong>Ketua Tim</strong>. Tambahkan nama rekan tim di bawah ini hingga memenuhi syarat minimal.
+                    </div>
+                    
+                    <div id="groupMembersList" style="display: flex; flex-direction: column; gap: 8px;">
+                      <!-- Dynamic member inputs inserted here -->
+                    </div>
+
+                    <button type="button" class="btn btn-outline" id="btnAddMember" onclick="addGroupMemberInput()" style="margin-top: 10px; width: 100%; font-size: 12px; padding: 7px 12px;">
+                      + Tambah Anggota Tim
+                    </button>
+                  </div>
+                </div>
+
                 <div class="form-group">
-                  <label>Catatan / Nama Anggota Tim <small>(opsional jika beregu)</small></label>
-                  <textarea id="regCatatan" class="form-control" rows="2" placeholder="Tuliskan nama anggota tim jika lomba beregu..."></textarea>
+                  <label>Catatan Tambahan <small>(opsional)</small></label>
+                  <textarea id="regCatatan" class="form-control" rows="2" placeholder="Tuliskan catatan tambahan jika ada..."></textarea>
                 </div>
                 <button type="submit" class="btn btn-hunter" id="btnSubmitReg" style="width: 100%; padding: 12px;">
                   Kirim Pendaftaran &amp; Otomatis Masuk Akun &rarr;
@@ -140,6 +175,7 @@
                       <div class="pass-name" id="livePassNama">Nama Peserta</div>
                       <div class="pass-sub" id="livePassKelas">Kelas &bull; Pratinjau Langsung</div>
                       <div class="pass-sub" style="color: #FBF8F3; margin-top: 6px; font-weight: 600;" id="livePassComp">Cabang: -</div>
+                      <div class="pass-sub" style="color: #F1D28C; margin-top: 4px; font-size: 11.5px; display: none;" id="livePassTeam">Tim: -</div>
                     </div>
                     <div class="pass-qr-box" id="livePassQr"></div>
                   </div>

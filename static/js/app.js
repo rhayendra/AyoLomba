@@ -521,6 +521,107 @@ function renderDaftarWorkspaceDetail() {
     submitBtn.disabled = false;
   }
 
+  // Atur Tampilan Khusus Lomba Kelompok / Beregu
+  const isGroup = Boolean(comp.isGroup) || comp.category?.toLowerCase().includes('tim') || comp.category?.toLowerCase().includes('kelompok');
+  const minMembers = comp.minMembers || (isGroup ? 2 : 1);
+  const groupContainer = document.getElementById('groupFieldsContainer');
+  const groupMinBadge = document.getElementById('groupMinBadge');
+
+  if (groupContainer) {
+    if (isGroup) {
+      groupContainer.style.display = 'block';
+      if (groupMinBadge) groupMinBadge.textContent = `Wajib Minimal ${minMembers} Pendaftar`;
+      const regNamaKelompok = document.getElementById('regNamaKelompok');
+      if (regNamaKelompok) regNamaKelompok.required = true;
+      // Inisialisasi input anggota tim default jika masih kosong
+      initGroupMemberInputs(minMembers);
+    } else {
+      groupContainer.style.display = 'none';
+      const regNamaKelompok = document.getElementById('regNamaKelompok');
+      if (regNamaKelompok) {
+        regNamaKelompok.required = false;
+        regNamaKelompok.value = '';
+      }
+      const list = document.getElementById('groupMembersList');
+      if (list) list.innerHTML = '';
+    }
+  }
+
+  updateLivePass();
+}
+
+function initGroupMemberInputs(minMembers) {
+  const list = document.getElementById('groupMembersList');
+  if (!list) return;
+  // Jika sudah terisi dari sebelumnya dan jumlah sudah sesuai, pertahankan isinya
+  const existingInputs = list.querySelectorAll('.group-member-input');
+  const neededAdditional = Math.max(0, minMembers - 1); // 1 ketua + (minMembers - 1) anggota
+  if (existingInputs.length === 0 && neededAdditional > 0) {
+    list.innerHTML = '';
+    for (let i = 0; i < neededAdditional; i++) {
+      addGroupMemberInput(i + 1, false);
+    }
+  }
+  updateGroupCountIndicator();
+}
+
+function addGroupMemberInput(indexNum, focusNew = true) {
+  const list = document.getElementById('groupMembersList');
+  if (!list) return;
+  const currentCount = list.querySelectorAll('.group-member-row').length + 1;
+  const num = indexNum || currentCount;
+  
+  const row = document.createElement('div');
+  row.className = 'group-member-row';
+  row.style.cssText = 'display: flex; gap: 8px; align-items: center;';
+  row.innerHTML = `
+    <span style="font-size: 11px; font-weight: 700; color: var(--hunter-medium); width: 68px; flex-shrink: 0;">Anggota ${num}:</span>
+    <input type="text" class="form-control group-member-input" placeholder="Nama lengkap anggota tim..." oninput="updateGroupCountIndicator()" style="font-size: 13px; padding: 7px 10px;" required>
+    <button type="button" class="btn btn-outline" style="padding: 5px 9px; color: var(--danger); font-size: 11px; border-color: #e5b3b3;" onclick="removeGroupMemberRow(this)">&times;</button>
+  `;
+  list.appendChild(row);
+  if (focusNew) {
+    const input = row.querySelector('input');
+    if (input) input.focus();
+  }
+  updateGroupCountIndicator();
+}
+
+function removeGroupMemberRow(btn) {
+  const row = btn.closest('.group-member-row');
+  if (row) {
+    row.remove();
+    // Re-label anggota numbers
+    const list = document.getElementById('groupMembersList');
+    if (list) {
+      const rows = list.querySelectorAll('.group-member-row');
+      rows.forEach((r, idx) => {
+        const lbl = r.querySelector('span');
+        if (lbl) lbl.textContent = `Anggota ${idx + 1}:`;
+      });
+    }
+  }
+  updateGroupCountIndicator();
+}
+
+function updateGroupCountIndicator() {
+  const found = findCompetitionById(activeCompId);
+  const comp = found ? found.comp : null;
+  const isGroup = comp ? (Boolean(comp.isGroup) || comp.category?.toLowerCase().includes('tim') || comp.category?.toLowerCase().includes('kelompok')) : false;
+  const minMembers = comp?.minMembers || (isGroup ? 2 : 1);
+
+  const list = document.getElementById('groupMembersList');
+  const countIndicator = document.getElementById('groupCountIndicator');
+  if (!list || !countIndicator) return;
+
+  const filledMembers = Array.from(list.querySelectorAll('.group-member-input'))
+    .map(i => i.value.trim())
+    .filter(Boolean);
+
+  const total = 1 + filledMembers.length; // 1 Ketua + anggota
+  const meetMin = total >= minMembers;
+  countIndicator.innerHTML = `Total Terdata: <strong>${total}</strong> dari min. <strong>${minMembers}</strong> orang ${meetMin ? '&#10003; (Lengkap)' : '&#9888; (Kurang ' + (minMembers - total) + ' orang)'}`;
+  countIndicator.style.color = meetMin ? 'var(--hunter-deep)' : 'var(--danger)';
   updateLivePass();
 }
 
@@ -564,6 +665,19 @@ function updateLivePass() {
   document.getElementById('livePassNama').textContent = namaVal || 'Nama Peserta';
   document.getElementById('livePassKelas').textContent = kelasVal ? `Kelas ${kelasVal}` : 'Kelas • Pratinjau Langsung';
   document.getElementById('livePassComp').textContent = `Cabang: ${comp.name}`;
+  
+  const teamEl = document.getElementById('livePassTeam');
+  const namaKelompokEl = document.getElementById('regNamaKelompok');
+  if (teamEl) {
+    const isGroup = Boolean(comp.isGroup) || comp.category?.toLowerCase().includes('tim') || comp.category?.toLowerCase().includes('kelompok');
+    if (isGroup && namaKelompokEl && namaKelompokEl.value.trim()) {
+      teamEl.style.display = 'block';
+      teamEl.textContent = `Tim: ${namaKelompokEl.value.trim()}`;
+    } else {
+      teamEl.style.display = 'none';
+    }
+  }
+
   document.getElementById('livePassQr').innerHTML = buildQrSvg(namaVal || comp.id);
 }
 
@@ -573,6 +687,28 @@ async function submitRegistrationPage(e) {
   if (!found) return;
   const { ev, comp } = found;
 
+  const isGroup = Boolean(comp.isGroup) || comp.category?.toLowerCase().includes('tim') || comp.category?.toLowerCase().includes('kelompok');
+  const minMembers = comp.minMembers || (isGroup ? 2 : 1);
+
+  const namaKelompokVal = (document.getElementById('regNamaKelompok')?.value || '').trim();
+  let anggotaList = [];
+  if (isGroup) {
+    if (!namaKelompokVal) {
+      showToast('Wajib mengisi Nama Kelompok / Tim!', true);
+      document.getElementById('regNamaKelompok')?.focus();
+      return;
+    }
+    const memberInputs = document.querySelectorAll('.group-member-input');
+    anggotaList = Array.from(memberInputs)
+      .map(i => i.value.trim())
+      .filter(Boolean);
+    const totalPendaftar = 1 + anggotaList.length; // 1 Ketua + anggota
+    if (totalPendaftar < minMembers) {
+      showToast(`Lomba '${comp.name}' butuh minimal ${minMembers} pendaftar dalam 1 kelompok. Saat ini baru ada ${totalPendaftar} orang (Ketua + ${anggotaList.length} anggota). Silakan klik '+ Tambah Anggota Tim'`, true);
+      return;
+    }
+  }
+
   const payload = {
     eventId: ev.id,
     competitionId: comp.id,
@@ -580,6 +716,8 @@ async function submitRegistrationPage(e) {
     kelas: document.getElementById('regKelas').value.trim(),
     kontak: document.getElementById('regKontak').value.trim(),
     catatan: document.getElementById('regCatatan').value.trim(),
+    namaKelompok: namaKelompokVal,
+    anggotaList: anggotaList,
     juknisViewed: Boolean(juknisViewedMap[comp.id])
   };
 
@@ -613,12 +751,34 @@ async function submitRegistrationPage(e) {
 // ==========================================
 // 3. DEDICATED PARTICIPANT PAGE (/peserta)
 // ==========================================
-function initPesertaPage() {
+async function initPesertaPage() {
   const dashView = document.getElementById('pesertaDashboardView');
   const loginView = document.getElementById('pesertaLoginView');
   const welcomeBanner = document.getElementById('welcomeAutoLoginBanner');
 
   const params = new URLSearchParams(window.location.search);
+  const autoId = params.get('auto_id');
+  const autoPw = params.get('auto_pw');
+
+  // Jika baru saja mendaftar dan cookie sesi Vercel belum terbaca, otomatis login dengan kredensial pendaftaran!
+  if ((!participantContext || !participantContext.participant) && autoId && autoPw) {
+    try {
+      const res = await fetch('/api/participant/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: autoId, password: autoPw })
+      });
+      const data = await res.json();
+      if (data.success) {
+        participantContext = data;
+        participantContext.authenticated = true;
+        renderGlobalParticipantNavbar();
+      }
+    } catch (e) {
+      console.error('Auto login fallback error:', e);
+    }
+  }
+
   if (welcomeBanner) {
     welcomeBanner.style.display = params.get('welcome') === '1' ? 'block' : 'none';
   }
@@ -646,11 +806,32 @@ function renderPesertaDashboardPage() {
   document.getElementById('profComp').textContent = p.competitionName;
   document.getElementById('profCreds').textContent = `${p.id} / ${p.password}`;
 
+  const profGroupCard = document.getElementById('profGroupCard');
+  const profGroupVal = document.getElementById('profGroupVal');
+  if (profGroupCard && profGroupVal) {
+    if (p.isGroup && p.namaKelompok) {
+      profGroupCard.style.display = 'block';
+      const anggotaStr = (p.anggotaList && p.anggotaList.length > 0) ? ` (${p.totalPendaftar || (1 + p.anggotaList.length)} orang: ${p.nama} [Ketua], ${p.anggotaList.join(', ')})` : '';
+      profGroupVal.textContent = `${p.namaKelompok}${anggotaStr}`;
+    } else {
+      profGroupCard.style.display = 'none';
+    }
+  }
+
   // Permanent Digital Card
   document.getElementById('dashPassEvent').textContent = p.eventName;
   document.getElementById('dashPassNama').textContent = p.nama;
   document.getElementById('dashPassKelas').textContent = `Kelas ${p.kelas} • Kontak: ${p.kontak}`;
   document.getElementById('dashPassComp').textContent = `Cabang: ${p.competitionName}`;
+  const dashTeamEl = document.getElementById('dashPassTeam');
+  if (dashTeamEl) {
+    if (p.isGroup && p.namaKelompok) {
+      dashTeamEl.style.display = 'block';
+      dashTeamEl.textContent = `Tim: ${p.namaKelompok} (${p.totalPendaftar || (1 + (p.anggotaList ? p.anggotaList.length : 0))} Anggota)`;
+    } else {
+      dashTeamEl.style.display = 'none';
+    }
+  }
   document.getElementById('dashPassId').textContent = p.id;
   document.getElementById('dashPassPw').textContent = p.password;
   document.getElementById('dashPassQr').innerHTML = buildQrSvg(p.id);
@@ -975,6 +1156,7 @@ async function loadAndOpenPanitiaDashboard() {
   renderPanitiaEventsControl();
   renderPanitiaCompsControl();
   await fetchPanitiaParticipants();
+  await fetchPanitiaAdminsList();
   openModal('panitiaDashModal');
 }
 
@@ -1110,12 +1292,30 @@ async function toggleCompLock(compId) {
   }
 }
 
+function toggleAddCompGroup(isGroup) {
+  const wrapper = document.getElementById('addCompGroupMinWrapper');
+  const catInput = document.getElementById('addCompCategory');
+  if (wrapper) wrapper.style.display = isGroup ? 'block' : 'none';
+  if (catInput) {
+    if (isGroup && catInput.value === 'Individu') {
+      catInput.value = 'Beregu / Tim';
+    } else if (!isGroup && catInput.value === 'Beregu / Tim') {
+      catInput.value = 'Individu';
+    }
+  }
+}
+
 async function submitNewCompetition(e) {
   e.preventDefault();
+  const isGroup = Boolean(document.getElementById('addCompIsGroup')?.checked);
+  const minMembers = isGroup ? parseInt(document.getElementById('addCompMinMembers')?.value || '2', 10) : 1;
+
   const payload = {
     eventId: document.getElementById('addCompEventId').value,
     name: document.getElementById('addCompName').value.trim(),
     category: document.getElementById('addCompCategory').value.trim(),
+    isGroup: isGroup,
+    minMembers: minMembers,
     juknis: document.getElementById('addCompJuknis').value.trim()
   };
   const res = await fetch('/api/panitia/add-competition', {
@@ -1128,6 +1328,8 @@ async function submitNewCompetition(e) {
     showToast(data.message);
     document.getElementById('addCompName').value = '';
     document.getElementById('addCompJuknis').value = '';
+    if (document.getElementById('addCompIsGroup')) document.getElementById('addCompIsGroup').checked = false;
+    toggleAddCompGroup(false);
     closeModal('addCompModal');
     await loadAndOpenPanitiaDashboard();
   } else {
@@ -1171,6 +1373,94 @@ async function deleteParticipant(id) {
   if (data.success) {
     showToast(data.message);
     await loadAndOpenPanitiaDashboard();
+  }
+}
+
+async function fetchPanitiaAdminsList() {
+  const tbody = document.getElementById('panitiaAdminsTableBody');
+  if (!tbody) return;
+  try {
+    const res = await fetch('/api/panitia/list');
+    const data = await res.json();
+    const list = data.panitia || [];
+    if (list.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; padding: 14px; color: var(--muted);">Belum ada akun panitia.</td></tr>`;
+      return;
+    }
+    tbody.innerHTML = list
+      .map(
+        (p) => `
+        <tr>
+          <td class="mono" style="font-weight: 700; color: var(--hunter);">${esc(p.id)}</td>
+          <td><strong>${esc(p.name)}</strong></td>
+          <td><span class="badge badge-brass">${esc(p.role || 'Panitia')}</span></td>
+          <td class="mono">${esc(p.password)}</td>
+          <td>
+            ${
+              p.id.toLowerCase() === 'panitia' || (panitiaSession && p.id.toUpperCase() === panitiaSession.id.toUpperCase())
+                ? '<span style="font-size: 11px; color: var(--muted); font-style: italic;">Akun Aktif</span>'
+                : `<button class="btn btn-danger btn-sm" onclick="deletePanitiaAdmin('${esc(p.id)}')">Hapus</button>`
+            }
+          </td>
+        </tr>
+      `
+      )
+      .join('');
+  } catch {
+    tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; padding: 14px; color: var(--danger);">Gagal memuat daftar panitia.</td></tr>`;
+  }
+}
+
+async function submitNewPanitiaAdmin(e) {
+  e.preventDefault();
+  const payload = {
+    id: document.getElementById('newPanitiaId').value.trim(),
+    name: document.getElementById('newPanitiaName').value.trim(),
+    role: document.getElementById('newPanitiaRole').value.trim(),
+    password: document.getElementById('newPanitiaPw').value.trim()
+  };
+
+  try {
+    const res = await fetch('/api/panitia/add', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json();
+    if (!res.ok || !data.success) {
+      showToast(data.message || 'Gagal menambahkan akun panitia.', true);
+      return;
+    }
+
+    showToast(data.message);
+    document.getElementById('newPanitiaId').value = '';
+    document.getElementById('newPanitiaName').value = '';
+    document.getElementById('newPanitiaPw').value = '';
+    closeModal('addPanitiaModal');
+    await fetchPanitiaAdminsList();
+  } catch {
+    showToast('Gagal menghubungi server.', true);
+  }
+}
+
+async function deletePanitiaAdmin(targetId) {
+  if (!confirm(`Apakah Anda yakin ingin menghapus akun panitia '${targetId}'?`)) return;
+  try {
+    const res = await fetch('/api/panitia/delete', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id: targetId })
+    });
+    const data = await res.json();
+    if (!res.ok || !data.success) {
+      showToast(data.message || 'Gagal menghapus akun panitia.', true);
+      return;
+    }
+
+    showToast(data.message);
+    await fetchPanitiaAdminsList();
+  } catch {
+    showToast('Gagal menghubungi server.', true);
   }
 }
 
