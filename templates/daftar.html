@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Daftar Lomba — Ayo Lomba</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;0,9..144,700;1,9..144,600&family=JetBrains+Mono:wght@500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body data-page="daftar">
+
+  <!-- Editorial Masthead -->
+  <header class="masthead">
+    <div class="masthead-top">
+      <div class="container masthead-top-inner">
+        <span id="topAuthBanner">HALAMAN KHUSUS PENDAFTARAN PESERTA &bull; AYO LOMBA</span>
+        <span id="serverClockBanner">Memuat waktu server...</span>
+      </div>
+    </div>
+    <div class="container masthead-nav">
+      <a href="/" class="brand" style="text-decoration: none;">
+        <div class="brand-crest">AL</div>
+        <div class="brand-title">
+          <h1>Ayo Lomba</h1>
+          <span>Formulir Pendaftaran Resmi</span>
+        </div>
+      </a>
+
+      <nav class="nav-actions">
+        <a href="/" class="btn btn-ghost">&larr; Kembali ke Beranda</a>
+        <div id="navParticipantZone" style="display: inline-flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+          <a href="/peserta" class="btn btn-hunter">Login Peserta</a>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container" style="padding-top: 28px; padding-bottom: 56px;">
+    <div style="margin-bottom: 22px;">
+      <div class="issue-tag">Alur Pendaftaran Resmi &bull; Otomatis Login</div>
+      <h2 class="serif" style="font-size: 30px; color: var(--hunter-deep);">Formulir Keikutsertaan Lomba</h2>
+      <p style="font-size: 14px; color: var(--muted); max-width: 720px; margin-top: 4px;">
+        Pilih event dan cabang lomba di bawah, baca kisi-kisi teknisnya untuk membuka formulir, lalu isi Nama &amp; Kelas Anda.
+        Begitu dikirim, <strong>Anda akan langsung otomatis login</strong> ke halaman Kartu Peserta agar ID &amp; Password tidak pernah terlewat.
+      </p>
+    </div>
+
+    <div id="daftarAlreadyLoggedBanner" class="alert-box alert-hunter" style="display: none;"></div>
+
+    <!-- Event Selector Ribbon -->
+    <div class="event-ribbon" id="eventRibbon"></div>
+
+    <!-- Split Workspace: Left Index + Right Interactive Registration -->
+    <div class="split-workspace">
+      <aside class="catalog-panel">
+        <div class="catalog-head">
+          <h3 id="catalogEventTitle">Pilih Cabang Lomba</h3>
+          <div id="catalogEventMeta" style="font-size: 12px; color: var(--muted); margin-top: 3px;"></div>
+        </div>
+        <div class="catalog-list" id="catalogList"></div>
+      </aside>
+
+      <div class="detail-panel" id="detailPanel">
+        <div class="detail-header">
+          <div>
+            <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 6px; flex-wrap: wrap;">
+              <span class="badge badge-brass" id="wsEventBadge">EVENT</span>
+              <span class="badge badge-brass" id="wsCatBadge">KATEGORI</span>
+              <span class="badge badge-open" id="wsStatusBadge">AVAILABLE</span>
+            </div>
+            <h3 id="wsCompTitle">Pilih Cabang Lomba</h3>
+          </div>
+          <div style="font-size: 12px; color: var(--muted); font-weight: 600;" id="wsCountLabel"></div>
+        </div>
+
+        <!-- Mandatory Juknis Tab Flow -->
+        <div class="detail-tabs">
+          <button type="button" class="detail-tab active" id="wsTabJuknis" onclick="switchDaftarTab('juknis')">
+            Langkah 1: Baca Kisi-Kisi &amp; Juknis
+          </button>
+          <button type="button" class="detail-tab locked" id="wsTabRegister" onclick="switchDaftarTab('register')">
+            Langkah 2: Isi Formulir &amp; Kartu <span id="wsTabLockIcon">&#128274;</span>
+          </button>
+        </div>
+
+        <div class="detail-body">
+          <!-- Step 1: Juknis -->
+          <div id="wsPanelJuknis">
+            <div class="alert-box alert-hunter">
+              <strong>Wajib Dibaca (Mandatory Juknis View):</strong> Silakan baca petunjuk teknis di bawah ini terlebih dahulu. Setelah dibaca, klik tombol di bawah untuk mengisi formulir pendaftaran.
+            </div>
+            <div class="juknis-paper" id="wsJuknisContent"></div>
+            <button type="button" class="btn btn-hunter" style="width: 100%; padding: 12px;" onclick="confirmJuknisAndOpenForm()">
+              Saya Sudah Membaca Juknis &mdash; Lanjut Isi Formulir Pendaftaran &rarr;
+            </button>
+          </div>
+
+          <!-- Step 2: Form + Live Pass -->
+          <div id="wsPanelRegister" style="display: none;">
+            <div id="wsLockBanner" class="alert-box alert-danger" style="display: none;"></div>
+            <div class="alert-box alert-brass">
+              <strong>Aturan Single Registration (Tanpa NIS/NISN):</strong> 1 siswa hanya boleh mendaftar 1 cabang lomba pada event ini. Setelah klik kirim, akun Anda akan <strong>otomatis masuk (auto-login)</strong> ke halaman Kartu Peserta.
+            </div>
+
+            <div class="reg-split">
+              <form id="wsRegisterForm" onsubmit="submitRegistrationPage(event)">
+                <div class="form-group">
+                  <label>Nama Lengkap Siswa *</label>
+                  <input type="text" id="regNama" class="form-control" placeholder="Contoh: Nadia Putri" oninput="updateLivePass()" required>
+                </div>
+                <div class="form-group">
+                  <label>Kelas *</label>
+                  <input type="text" id="regKelas" class="form-control" placeholder="Contoh: XI-IPA 1" oninput="updateLivePass()" required>
+                </div>
+                <div class="form-group">
+                  <label>Nomor WhatsApp / HP <small>(opsional, untuk pemanggilan lomba)</small></label>
+                  <input type="tel" id="regKontak" class="form-control" placeholder="08xxxxxxxxxx">
+                </div>
+                <div class="form-group">
+                  <label>Catatan / Nama Anggota Tim <small>(opsional jika beregu)</small></label>
+                  <textarea id="regCatatan" class="form-control" rows="2" placeholder="Tuliskan nama anggota tim jika lomba beregu..."></textarea>
+                </div>
+                <button type="submit" class="btn btn-hunter" id="btnSubmitReg" style="width: 100%; padding: 12px;">
+                  Kirim Pendaftaran &amp; Otomatis Masuk Akun &rarr;
+                </button>
+              </form>
+
+              <!-- Live Preview Heritage Pass -->
+              <div class="pass-wrapper">
+                <div class="pass-card" id="livePassCard">
+                  <div class="pass-head">
+                    <span class="pass-brand">AYO LOMBA PASS</span>
+                    <span class="pass-event-pill" id="livePassEvent">EVENT</span>
+                  </div>
+                  <div class="pass-body-row">
+                    <div>
+                      <div class="pass-name" id="livePassNama">Nama Peserta</div>
+                      <div class="pass-sub" id="livePassKelas">Kelas &bull; Pratinjau Langsung</div>
+                      <div class="pass-sub" style="color: #FBF8F3; margin-top: 6px; font-weight: 600;" id="livePassComp">Cabang: -</div>
+                    </div>
+                    <div class="pass-qr-box" id="livePassQr"></div>
+                  </div>
+                  <div class="pass-creds">
+                    <div>
+                      <div class="pass-cred-lbl">ID User Akun</div>
+                      <div class="pass-cred-val" id="livePassId">OTOMATIS</div>
+                    </div>
+                    <div>
+                      <div class="pass-cred-lbl">Password Akun</div>
+                      <div class="pass-cred-val" id="livePassPw">&bull;&bull;&bull;&bull;&bull;&bull;</div>
+                    </div>
+                  </div>
+                  <div style="font-size: 10.5px; color: #D7E8DE; text-align: center; margin-top: 10px;">
+                    Kartu ini akan tersimpan permanen di halaman Akun Peserta Anda setelah dikirim.
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <div class="toast-container" id="toastContainer"></div>
+
+  <footer>
+    <div class="container">
+      <strong class="serif">Ayo Lomba</strong> &mdash; Halaman Pendaftaran Resmi Peserta
+    </div>
+  </footer>
+
+  <script src="/static/js/app.js"></script>
+</body>
+</html>

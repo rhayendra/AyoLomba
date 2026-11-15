@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Akun &amp; Kartu Peserta — Ayo Lomba</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;0,9..144,700;1,9..144,600&family=JetBrains+Mono:wght@500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body data-page="peserta">
+
+  <!-- Editorial Masthead -->
+  <header class="masthead">
+    <div class="masthead-top">
+      <div class="container masthead-top-inner">
+        <span id="topAuthBanner">PORTAL AKUN &amp; KARTU LOMBA PESERTA &bull; AYO LOMBA</span>
+        <span id="serverClockBanner">Memuat waktu server...</span>
+      </div>
+    </div>
+    <div class="container masthead-nav">
+      <a href="/" class="brand" style="text-decoration: none;">
+        <div class="brand-crest">AL</div>
+        <div class="brand-title">
+          <h1>Ayo Lomba</h1>
+          <span>Dasbor &amp; Kartu Peserta</span>
+        </div>
+      </a>
+
+      <nav class="nav-actions">
+        <a href="/" class="btn btn-ghost">&larr; Beranda &amp; Bagan</a>
+        <a href="/daftar" class="btn btn-parchment">Daftar Event Lain</a>
+        <div id="navParticipantZone" style="display: inline-flex; align-items: center; gap: 8px; flex-wrap: wrap;"></div>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container" style="padding-top: 30px; padding-bottom: 60px;">
+
+    <!-- View 1: Shown when Participant IS Logged In (Auto-login after register or manual login) -->
+    <div id="pesertaDashboardView" style="display: none;">
+      <div id="welcomeAutoLoginBanner" class="alert-box alert-hunter" style="display: none; font-size: 14px; padding: 14px 18px;">
+        <strong>Selamat! Pendaftaran Berhasil &amp; Anda Telah Otomatis Login.</strong><br>
+        Kartu Lomba Digital, ID User, dan Password Anda tersimpan aman di bawah ini. Silakan salin atau cetak kartu Anda kapan saja.
+      </div>
+
+      <div style="display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 12px; margin-bottom: 18px;">
+        <div>
+          <div class="issue-tag">Akun Peserta Terverifikasi</div>
+          <h2 class="serif" style="font-size: 30px; color: var(--hunter-deep);" id="dashHeaderTitle">Profil &amp; Kartu Lomba</h2>
+        </div>
+        <div id="multiCardSwitcher" style="display: none; gap: 6px; flex-wrap: wrap; align-items: center;"></div>
+      </div>
+
+      <!-- Indikator Nama, Kelas, Event, Cabang, Status -->
+      <div class="profile-info-grid">
+        <div class="profile-stat-card">
+          <div class="p-label">Nama Lengkap Siswa</div>
+          <div class="p-val" id="profNama">-</div>
+        </div>
+        <div class="profile-stat-card">
+          <div class="p-label">Kelas</div>
+          <div class="p-val" id="profKelas">-</div>
+        </div>
+        <div class="profile-stat-card">
+          <div class="p-label">Event Utama</div>
+          <div class="p-val" id="profEvent">-</div>
+        </div>
+        <div class="profile-stat-card">
+          <div class="p-label">Cabang Lomba</div>
+          <div class="p-val" id="profComp">-</div>
+        </div>
+        <div class="profile-stat-card">
+          <div class="p-label">ID User &amp; Password</div>
+          <div class="p-val mono" id="profCreds" style="color: var(--hunter-mid);">-</div>
+        </div>
+      </div>
+
+      <div class="reg-split" style="grid-template-columns: 0.95fr 1.15fr; gap: 24px;">
+        <!-- Left: Permanent Kartu Lomba Digital -->
+        <div>
+          <div class="pass-card print-pass-target" id="dashPassCard">
+            <div class="pass-head">
+              <span class="pass-brand">KARTU PESERTA &bull; AYO LOMBA</span>
+              <span class="pass-event-pill" id="dashPassEvent">EVENT</span>
+            </div>
+            <div class="pass-body-row">
+              <div>
+                <div class="pass-name" id="dashPassNama">-</div>
+                <div class="pass-sub" id="dashPassKelas">-</div>
+                <div class="pass-sub" style="color: #FBF8F3; margin-top: 6px; font-weight: 600;" id="dashPassComp">-</div>
+              </div>
+              <div class="pass-qr-box" id="dashPassQr"></div>
+            </div>
+            <div class="pass-creds">
+              <div>
+                <div class="pass-cred-lbl">ID User Peserta</div>
+                <div class="pass-cred-val" id="dashPassId">-</div>
+              </div>
+              <div>
+                <div class="pass-cred-lbl">Password Akun</div>
+                <div class="pass-cred-val" id="dashPassPw">-</div>
+              </div>
+            </div>
+            <div style="font-size: 11px; color: #D7E8DE; text-align: center; margin-top: 10px;" id="dashPassTime">-</div>
+          </div>
+
+          <div style="display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap;">
+            <button type="button" class="btn btn-hunter" style="flex: 1;" onclick="copyDashCard()">Salin ID &amp; Password</button>
+            <button type="button" class="btn btn-parchment" style="flex: 1;" onclick="window.print()">Cetak / Simpan PDF</button>
+            <button type="button" class="btn btn-danger" onclick="logoutParticipant()">Keluar Akun</button>
+          </div>
+        </div>
+
+        <!-- Right: Bracket Status, Visual Bracket & Juknis -->
+        <div class="detail-panel">
+          <div class="detail-header">
+            <div>
+              <span class="badge badge-open">STATUS BAGAN &amp; JUKNIS</span>
+              <h3 style="margin-top: 6px;" id="dashCompTitle">Perkembangan Perlombaan Anda</h3>
+            </div>
+          </div>
+          <div class="detail-body">
+            <div class="alert-box alert-hunter">
+              <strong>Posisi &amp; Status Pertandingan Anda:</strong><br>
+              <span id="dashBracketStatus">-</span>
+            </div>
+
+            <h4 class="serif" style="font-size: 16px; color: var(--hunter-deep); margin: 16px 0 8px;">
+              Bagan Pertandingan Cabang Ini
+            </h4>
+            <div id="dashBracketTree" style="margin-bottom: 18px;"></div>
+
+            <h4 class="serif" style="font-size: 16px; color: var(--hunter-deep); margin: 16px 0 8px;">
+              Kisi-Kisi &amp; Juknis Lomba
+            </h4>
+            <div class="juknis-paper" id="dashJuknisBox" style="margin-bottom: 0;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- View 2: Shown when Participant IS NOT Logged In -->
+    <div id="pesertaLoginView" style="display: none; max-width: 500px; margin: 20px auto;">
+      <div class="detail-panel">
+        <div class="detail-header">
+          <div>
+            <span class="badge badge-brass">PORTAL PESERTA</span>
+            <h3 style="margin-top: 6px;">Login Akun Peserta</h3>
+          </div>
+        </div>
+        <div class="detail-body">
+          <div class="alert-box alert-hunter">
+            Masukkan <strong>ID User</strong> dan <strong>Password</strong> dari Kartu Lomba Anda untuk melihat profil, kartu peserta, dan perkembangan bagan.
+          </div>
+          <form onsubmit="submitPesertaPageLogin(event)">
+            <div class="form-group">
+              <label>ID User Peserta</label>
+              <input type="text" id="pLoginId" class="form-control mono" placeholder="Contoh: AYO-BB-4821" required>
+            </div>
+            <div class="form-group">
+              <label>Password Akun</label>
+              <input type="password" id="pLoginPw" class="form-control mono" placeholder="Masukkan password 6 karakter" required>
+            </div>
+            <button type="submit" class="btn btn-hunter" style="width: 100%; padding: 12px;">
+              Masuk ke Akun Peserta &rarr;
+            </button>
+          </form>
+          <div style="margin-top: 16px; padding-top: 14px; border-top: 1px dashed var(--rule); text-align: center; font-size: 13px;">
+            Belum mendaftar lomba? <a href="/daftar" style="color: var(--hunter); font-weight: 700;">Daftar Lomba Sekarang (Otomatis Login) &rarr;</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <div class="toast-container" id="toastContainer"></div>
+
+  <footer>
+    <div class="container">
+      <strong class="serif">Ayo Lomba</strong> &mdash; Portal Akun &amp; Kartu Peserta Resmi
+    </div>
+  </footer>
+
+  <script src="/static/js/app.js"></script>
+</body>
+</html>
