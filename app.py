@@ -307,6 +307,29 @@ def register():
             "message": f"Cabang lomba {comp['name']} saat ini sedang ditutup oleh panitia."
         }), 400
 
+    # Validasi Lomba Kelompok (Nama Kelompok & Minimal Anggota)
+    nama_kelompok = (payload.get('namaKelompok') or '').strip()
+    anggota_list = payload.get('anggotaList') or []
+    # Bersihkan nama anggota kosong
+    anggota_list = [str(a).strip() for a in anggota_list if str(a).strip()]
+
+    is_group = comp.get('isGroup', False) or 'tim' in comp.get('category', '').lower() or 'kelompok' in comp.get('category', '').lower()
+    min_members = comp.get('minMembers', 2 if is_group else 1)
+
+    if is_group:
+        if not nama_kelompok:
+            return jsonify({
+                "success": False,
+                "message": f"Cabang '{comp['name']}' adalah lomba kelompok. Wajib mengisi Nama Kelompok / Tim!"
+            }), 400
+        # Total pendaftar dalam kelompok = Ketua/Pendaftar Utama (1) + Anggota
+        total_pendaftar = 1 + len(anggota_list)
+        if total_pendaftar < min_members:
+            return jsonify({
+                "success": False,
+                "message": f"Cabang '{comp['name']}' membutuhkan minimal {min_members} pendaftar dalam 1 kelompok. Saat ini baru ada {total_pendaftar} orang (Ketua + {len(anggota_list)} anggota)."
+            }), 400
+
     # Single Registration Rule: 1 siswa hanya boleh mendaftar 1 cabang lomba per event
     norm_nama = normalize_text(nama)
     norm_kelas = normalize_text(kelas)
@@ -344,6 +367,10 @@ def register():
         "eventName": event['name'],
         "competitionId": comp_id,
         "competitionName": comp['name'],
+        "isGroup": is_group,
+        "namaKelompok": nama_kelompok if is_group else "",
+        "anggotaList": anggota_list if is_group else [],
+        "totalPendaftar": (1 + len(anggota_list)) if is_group else 1,
         "catatan": catatan or "-",
         "registeredAt": registered_at,
         "status": "Terdaftar"
@@ -372,6 +399,10 @@ def register():
             "eventName": event['name'],
             "competitionId": comp_id,
             "competitionName": comp['name'],
+            "isGroup": is_group,
+            "namaKelompok": nama_kelompok if is_group else "",
+            "anggotaList": anggota_list if is_group else [],
+            "totalPendaftar": (1 + len(anggota_list)) if is_group else 1,
             "catatan": catatan or "-",
             "registeredAt": registered_at,
             "status": "Terdaftar"
@@ -698,11 +729,16 @@ def add_competition():
     if not ev:
         return jsonify({"success": False, "message": "Event tidak ditemukan."}), 404
 
+    is_group = bool(payload.get('isGroup')) or 'tim' in category.lower() or 'kelompok' in category.lower()
+    min_members = int(payload.get('minMembers') or (2 if is_group else 1))
+
     comp_id = f"{event_id[:4]}-{int(datetime.now().timestamp())}-{secrets.randbelow(99)}"
     new_comp = {
         "id": comp_id,
         "name": name,
-        "category": category or "Individu",
+        "category": category or ("Kelompok" if is_group else "Individu"),
+        "isGroup": is_group,
+        "minMembers": min_members,
         "locked": False,
         "juknis": juknis or "1. Peserta wajib hadir 15 menit sebelum lomba dimulai.\n2. Mengikuti seluruh arahan juri dan panitia.",
         "bracket": {"rounds": [], "champion": ""}
@@ -871,6 +907,75 @@ def update_bracket():
     return jsonify({"success": False, "message": "Aksi bagan tidak dikenali."}), 400
 
 
+@app.route('/api/panitia/list', methods=['GET'])
+@panitia_required
+def list_panitia():
+    panitia_list = get_all_panitia()
+    # Mask password sedikit untuk preview
+    safe_list = []
+    for p in panitia_list:
+        safe_list.append({
+            "id": p.get('id'),
+            "name": p.get('name'),
+            "role": p.get('role', 'Panitia Lomba'),
+            "password": p.get('password')
+        })
+    return jsonify({"success": True, "panitia": safe_list})
+
+
+@app.route('/api/panitia/add', methods=['POST'])
+@panitia_required
+def add_new_panitia():
+    payload = request.get_json() or {}
+    new_id = (payload.get('id') or '').strip()
+    new_pw = (payload.get('password') or '').strip()
+    new_name = (payload.get('name') or '').strip()
+    new_role = (payload.get('role') or 'Panitia Lomba').strip()
+
+    if not new_id or not new_pw or not new_name:
+        return jsonify({"success": False, "message": "ID Panitia, Nama, dan Password wajib diisi."}), 400
+
+    data = load_data()
+    panitia_list = data.get('panitia', [])
+    if any(p.get('id', '').upper() == new_id.upper() for p in panitia_list):
+        return jsonify({"success": False, "message": f"Panitia dengan ID '{new_id}' sudah ada."}), 400
+
+    new_member = {
+        "id": new_id,
+        "name": new_name,
+        "password": new_pw,
+        "role": new_role
+    }
+    panitia_list.append(new_member)
+    data['panitia'] = panitia_list
+    save_data(data)
+
+    return jsonify({"success": True, "message": f"Akun panitia '{new_name}' ({new_id}) berhasil ditambahkan!", "panitia": new_member})
+
+
+@app.route('/api/panitia/delete', methods=['POST'])
+@panitia_required
+def delete_panitia():
+    payload = request.get_json() or {}
+    target_id = (payload.get('id') or '').strip().upper()
+    current_id = session.get('panitia_id', '').upper()
+
+    if target_id == current_id:
+        return jsonify({"success": False, "message": "Anda tidak dapat menghapus akun Anda sendiri saat sedang login."}), 400
+
+    if target_id == 'PANITIA':
+        return jsonify({"success": False, "message": "Akun superadmin bawaan tidak dapat dihapus."}), 400
+
+    data = load_data()
+    before = len(data.get('panitia', []))
+    data['panitia'] = [p for p in data.get('panitia', []) if p.get('id', '').upper() != target_id]
+    if len(data['panitia']) == before:
+        return jsonify({"success": False, "message": "Akun panitia tidak ditemukan atau merupakan akun environment variable."}), 400
+
+    save_data(data)
+    return jsonify({"success": True, "message": f"Akun panitia '{target_id}' berhasil dihapus."})
+
+
 @app.route('/api/panitia/participants')
 @panitia_required
 def get_all_participants():
@@ -916,24 +1021,24 @@ def export_excel():
     thin_side = Side(style='thin', color='D9D3C7')
     border = Border(left=thin_side, right=thin_side, top=thin_side, bottom=thin_side)
 
-    ws.merge_cells('A1:J1')
+    ws.merge_cells('A1:L1')
     ws['A1'] = "REKAPITULASI PENDAFTARAN PESERTA - AYO LOMBA"
     ws['A1'].font = title_font
     ws['A1'].alignment = Alignment(horizontal="center", vertical="center")
     ws.row_dimensions[1].height = 28
 
-    ws.merge_cells('A2:J2')
+    ws.merge_cells('A2:L2')
     filter_lbl = f" | Filter Event: {event_filter}" if event_filter else " | Semua Event"
     ws['A2'] = f"Diekspor: {datetime.now().strftime('%d-%m-%Y %H:%M:%S')} | Total Peserta: {len(participants)}{filter_lbl}"
     ws['A2'].font = subtitle_font
     ws['A2'].alignment = Alignment(horizontal="center", vertical="center")
     ws.row_dimensions[2].height = 20
 
-    # NO NIS / NISN column
+    # NO NIS / NISN column, with Group details
     headers = [
-        "No", "ID Peserta", "Password Akun", "Nama Lengkap Siswa",
+        "No", "ID Peserta", "Password Akun", "Nama Pendaftar / Ketua",
         "Kelas", "No. Kontak / WA", "Event Utama", "Cabang Lomba",
-        "Waktu Daftar", "Catatan / Tim"
+        "Tipe Lomba", "Nama Kelompok / Tim", "Daftar Anggota Tim", "Waktu Daftar"
     ]
     ws.append([])
     ws.append(headers)
@@ -947,6 +1052,8 @@ def export_excel():
         cell.border = border
 
     for idx, p in enumerate(participants, start=1):
+        is_grp = p.get('isGroup', False)
+        anggota_str = ", ".join(p.get('anggotaList', [])) if is_grp and p.get('anggotaList') else (p.get('catatan', '-') if is_grp else "-")
         row_data = [
             idx,
             p.get('id', '-'),
@@ -956,8 +1063,10 @@ def export_excel():
             p.get('kontak', '-'),
             p.get('eventName', '-'),
             p.get('competitionName', '-'),
-            p.get('registeredAt', '-'),
-            p.get('catatan', '-')
+            "Kelompok" if is_grp else "Individu",
+            p.get('namaKelompok', '-') if is_grp else "-",
+            anggota_str,
+            p.get('registeredAt', '-')
         ]
         ws.append(row_data)
         r_num = 4 + idx

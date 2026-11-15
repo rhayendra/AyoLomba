@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ayo Lomba — Katalog &amp; Portal Perlombaan Sekolah</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;0,9..144,700;1,9..144,600&family=JetBrains+Mono:wght@500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/style.css">
+  <link rel="stylesheet" href="/public/css/style.css">
+</head>
+<body data-page="home">
+
+  <!-- Editorial Masthead -->
+  <header class="masthead">
+    <div class="masthead-top">
+      <div class="container masthead-top-inner">
+        <span id="topAuthBanner">EDISI RESMI EVENT SEKOLAH &bull; PENGGANTI BROSUR CETAK</span>
+        <span id="serverClockBanner">Memuat waktu server...</span>
+      </div>
+    </div>
+    <div class="container masthead-nav">
+      <a href="/" class="brand" style="text-decoration: none;">
+        <div class="brand-crest">AL</div>
+        <div class="brand-title">
+          <h1>Ayo Lomba</h1>
+          <span>Heritage School Championship</span>
+        </div>
+      </a>
+
+      <nav class="nav-actions">
+        <a href="/" class="btn btn-ghost">Beranda</a>
+        <a href="#bracketSection" class="btn btn-ghost">Bagan Juara</a>
+        <a href="/daftar" class="btn btn-parchment" id="navBtnDaftar">Ikuti Lomba</a>
+        <div id="navParticipantZone" style="display: inline-flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+          <a href="/peserta" class="btn btn-hunter">Login Peserta</a>
+        </div>
+        <button class="btn btn-outline" id="btnNavPanitia" onclick="openPanitiaPortal()">Login Panitia</button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Editorial Hero Strip with Countdown Ledger -->
+  <section class="editorial-hero">
+    <div class="container hero-grid">
+      <div>
+        <div class="issue-tag">Portal Terpusat &bull; Bulan Bahasa, PORAK &amp; 17 Agustus</div>
+        <h2>Informasi Lomba, <em>Juknis Resmi</em> &amp; Bagan Kejuaraan Sekolah.</h2>
+        <p>
+          Pelajari kisi-kisi setiap perlombaan di katalog beranda, lalu lanjutkan ke halaman khusus pendaftaran.
+          Begitu selesai mendaftar, Anda akan <strong>otomatis login</strong> ke halaman Kartu Peserta sehingga ID &amp; Password tidak akan terlewat.
+        </p>
+        <div id="homeLoggedStudentAlert" style="display: none;" class="alert-box alert-hunter"></div>
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+          <a href="/daftar" class="btn btn-hunter">Menuju Halaman Pendaftaran Lomba &rarr;</a>
+          <a href="/peserta" class="btn btn-parchment" id="heroBtnPeserta">Buka Kartu / Login Peserta</a>
+        </div>
+      </div>
+
+      <div class="hero-ledger">
+        <div class="ledger-head">
+          <h3>Papan Jadwal &amp; Countdown Event</h3>
+          <span class="badge badge-brass" id="ledgerParticipantBadge">0 Terdaftar</span>
+        </div>
+        <div class="ledger-list" id="heroLedgerList"></div>
+        <div style="margin-top: 10px; font-size: 11.5px; color: var(--muted);">
+          * Aturan: 1 siswa hanya dapat mengikuti 1 cabang lomba per event utama &amp; terkunci otomatis saat jadwal tutup tiba.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Content: Catalog Explorer & Bracket -->
+  <main class="container">
+    <section class="workspace-section" id="workspaceSection">
+      <div class="event-ribbon" id="eventRibbon"></div>
+
+      <div class="split-workspace">
+        <!-- Left Index -->
+        <aside class="catalog-panel">
+          <div class="catalog-head">
+            <h3 id="catalogEventTitle">Daftar Cabang Lomba</h3>
+            <div id="catalogEventMeta" style="font-size: 12px; color: var(--muted); margin-top: 3px;"></div>
+          </div>
+          <div class="catalog-list" id="catalogList"></div>
+        </aside>
+
+        <!-- Right Info & Juknis Panel (Redirects to dedicated /daftar page for registration) -->
+        <div class="detail-panel" id="detailPanel">
+          <div class="detail-header">
+            <div>
+              <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 6px; flex-wrap: wrap;">
+                <span class="badge badge-brass" id="wsEventBadge">EVENT</span>
+                <span class="badge badge-brass" id="wsCatBadge">KATEGORI</span>
+                <span class="badge badge-open" id="wsStatusBadge">AVAILABLE</span>
+              </div>
+              <h3 id="wsCompTitle">Pilih Cabang Lomba</h3>
+            </div>
+            <div style="font-size: 12px; color: var(--muted); font-weight: 600;" id="wsCountLabel"></div>
+          </div>
+
+          <div class="detail-tabs">
+            <button type="button" class="detail-tab active" id="wsTabJuknis" onclick="switchHomeCompTab('juknis')">
+              01. Kisi-Kisi &amp; Juknis Resmi
+            </button>
+            <button type="button" class="detail-tab" id="wsTabBracket" onclick="switchHomeCompTab('bracket')">
+              02. Pratinjau Bagan Cabang Ini
+            </button>
+          </div>
+
+          <div class="detail-body">
+            <div id="wsPanelJuknis">
+              <div class="alert-box alert-hunter">
+                <strong>Informasi Kisi-Kisi:</strong> Baca aturan teknis di bawah ini. Untuk mendaftar dan mendapatkan Kartu Lomba Digital secara otomatis, klik tombol pendaftaran di bawah.
+              </div>
+              <div class="juknis-paper" id="wsJuknisContent"></div>
+              <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <a href="/daftar" id="btnGoToDedicatedDaftar" class="btn btn-hunter" style="flex: 1; padding: 12px;">
+                  Ikuti Lomba Ini di Halaman Pendaftaran Khusus &rarr;
+                </a>
+                <button type="button" class="btn btn-parchment" onclick="switchHomeCompTab('bracket')">
+                  Lihat Bagan Cabang Ini
+                </button>
+              </div>
+            </div>
+
+            <div id="wsPanelBracket" style="display: none;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 8px;">
+                <span style="font-size: 13px; color: var(--muted);">Bagan langsung cabang <strong id="wsBracketTitle"></strong></span>
+                <button type="button" class="btn btn-parchment btn-sm" onclick="syncMainBracketToCurrent()">Buka di Tampilan Penuh &darr;</button>
+              </div>
+              <div id="wsBracketContainer"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Full-Width Homepage Tournament Bracket Showcase -->
+    <section class="bracket-showcase" id="bracketSection">
+      <div class="bracket-bar">
+        <div>
+          <h3 class="serif" style="font-size: 24px; color: var(--hunter-deep);">Bagan Turnamen &amp; Perkembangan Juara</h3>
+          <p style="font-size: 13px; color: var(--muted);" id="mainBracketSub">
+            Siswa dapat memantau bagan setiap cabang. Panitia dapat mengacak (Shuffle) dan memajukan pemenang.
+          </p>
+        </div>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
+          <select id="mainBracketSelect" class="form-control" style="width: auto; min-width: 250px;" onchange="renderMainBracket()"></select>
+          <div id="panitiaBracketToolbar" style="display: none; gap: 8px; flex-wrap: wrap;">
+            <button class="btn btn-hunter btn-sm" onclick="panitiaBracketAction('shuffle')">Shuffle (Acak Bagan)</button>
+            <button class="btn btn-parchment btn-sm" onclick="panitiaBracketAction('reset')">Reset Bagan</button>
+          </div>
+        </div>
+      </div>
+      <div id="mainBracketContainer"></div>
+    </section>
+  </main>
+
+  <!-- Modal: Panitia Login -->
+  <div class="modal-overlay" id="panitiaLoginModal">
+    <div class="modal-box">
+      <div class="modal-head">
+        <h3>Portal Khusus Panitia</h3>
+        <button class="close-x" onclick="closeModal('panitiaLoginModal')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="alert-box alert-brass">
+          <strong>Akses Terbatas:</strong> Hanya panitia yang memiliki <strong>ID Unik Panitia</strong> resmi yang dapat membuka kontrol perlombaan, pengacakan bagan, dan rekap Excel.
+        </div>
+        <form onsubmit="submitPanitiaLogin(event)">
+          <div class="form-group">
+            <label>ID Unik Panitia</label>
+            <input type="text" id="panitiaIdInput" class="form-control mono" placeholder="Masukkan ID Unik Panitia" autocomplete="off" required>
+          </div>
+          <div class="form-group">
+            <label>Password Panitia</label>
+            <input type="password" id="panitiaPwInput" class="form-control" placeholder="Masukkan password panitia" required>
+          </div>
+          <button type="submit" class="btn btn-hunter" style="width: 100%; padding: 11px;">
+            Verifikasi &amp; Masuk Ruang Kontrol
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Panitia Control Center -->
+  <div class="modal-overlay" id="panitiaDashModal">
+    <div class="modal-box wide">
+      <div class="modal-head">
+        <div>
+          <h3>Ruang Kontrol Panitia &mdash; Ayo Lomba</h3>
+          <span id="panitiaIdentityLabel" style="font-size: 12px; color: var(--hunter-mid); font-weight: 700;"></span>
+        </div>
+        <div style="display: flex; gap: 8px; align-items: center;">
+          <button class="btn btn-danger btn-sm" onclick="logoutPanitia()">Keluar Panitia</button>
+          <button class="close-x" onclick="closeModal('panitiaDashModal')">&times;</button>
+        </div>
+      </div>
+      <div class="modal-body">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 18px;">
+          <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <button class="btn btn-hunter btn-sm" onclick="openModal('addCompModal')">+ Tambah Cabang Lomba</button>
+            <button class="btn btn-parchment btn-sm" onclick="openModal('addPanitiaModal')">+ Tambah Akun Panitia Baru</button>
+            <button class="btn btn-parchment btn-sm" onclick="closeModal('panitiaDashModal'); scrollToEl('bracketSection');">Kelola &amp; Acak Bagan</button>
+          </div>
+          <div style="display: flex; gap: 8px; align-items: center;">
+            <select id="excelEventFilter" class="form-control" style="width: auto; padding: 6px 10px; font-size: 12px;">
+              <option value="">Semua Event (Excel)</option>
+              <option value="bulan-bahasa">Bulan Bahasa</option>
+              <option value="porak">PORAK</option>
+              <option value="17-agustus">17 Agustus</option>
+            </select>
+            <button class="btn btn-hunter btn-sm" onclick="downloadExcel()">Download Excel (.xlsx)</button>
+          </div>
+        </div>
+
+        <h4 class="serif" style="font-size: 16px; color: var(--hunter-deep); margin-bottom: 10px;">
+          1. Status Available/Locked &amp; Schedule Lock (3 Event Utama)
+        </h4>
+        <div class="panitia-grid" id="panitiaEventsControl"></div>
+
+        <h4 class="serif" style="font-size: 16px; color: var(--hunter-deep); margin: 16px 0 10px;">
+          2. Kelola Cabang Lomba &amp; Ubah Kisi-Kisi / Juknis
+        </h4>
+        <div id="panitiaCompsControl" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 10px; margin-bottom: 20px;"></div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; margin: 16px 0 8px;">
+          <h4 class="serif" style="font-size: 16px; color: var(--hunter-deep);">
+            3. Rekap Data Peserta (Tanpa NIS/NISN)
+          </h4>
+          <span id="panitiaTotalRows" style="font-size: 12px; color: var(--muted); font-weight: 700;"></span>
+        </div>
+        <div class="table-wrap" style="margin-bottom: 22px;">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>ID User</th>
+                <th>Password</th>
+                <th>Nama Siswa</th>
+                <th>Kelas</th>
+                <th>Event</th>
+                <th>Cabang Lomba</th>
+                <th>Kontak</th>
+                <th>Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="panitiaParticipantsBody"></tbody>
+          </table>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; margin: 16px 0 8px;">
+          <h4 class="serif" style="font-size: 16px; color: var(--hunter-deep);">
+            4. Daftar Akun Panitia Terdaftar
+          </h4>
+          <button class="btn btn-hunter btn-sm" onclick="openModal('addPanitiaModal')">+ Tambah Panitia Baru</button>
+        </div>
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Username / ID Panitia</th>
+                <th>Nama Panitia</th>
+                <th>Jabatan / Role</th>
+                <th>Password</th>
+                <th>Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="panitiaAdminsTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Add Competition -->
+  <div class="modal-overlay" id="addCompModal">
+    <div class="modal-box">
+      <div class="modal-head">
+        <h3>Tambah Cabang Lomba Baru</h3>
+        <button class="close-x" onclick="closeModal('addCompModal')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form onsubmit="submitNewCompetition(event)">
+          <div class="form-group">
+            <label>Pilih Event Utama *</label>
+            <select id="addCompEventId" class="form-control" required>
+              <option value="bulan-bahasa">Bulan Bahasa</option>
+              <option value="porak">PORAK</option>
+              <option value="17-agustus">17 Agustus</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Nama Cabang Lomba *</label>
+            <input type="text" id="addCompName" class="form-control" placeholder="Contoh: Debat Bahasa Indonesia" required>
+          </div>
+          <div class="form-group">
+            <label>Kategori Peserta</label>
+            <input type="text" id="addCompCategory" class="form-control" value="Individu">
+          </div>
+          <div class="form-group" style="background: #F4F1EA; padding: 10px; border-radius: 6px;">
+            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; margin-bottom: 6px;">
+              <input type="checkbox" id="addCompIsGroup" onchange="toggleAddCompGroup(this.checked)">
+              <strong>Lomba Beregu / Berkelompok (Wajib Nama Tim)</strong>
+            </label>
+            <div id="addCompGroupMinWrapper" style="display: none; margin-top: 8px;">
+              <label style="font-size: 12px; font-weight: 600;">Minimal Pendaftar dalam 1 Kelompok (termasuk Ketua):</label>
+              <input type="number" id="addCompMinMembers" class="form-control" min="2" max="50" value="2">
+              <small style="color: var(--muted); font-size: 11px;">Contoh: Futsal min 5 orang, Tarik Tambang min 8 orang.</small>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Kisi-Kisi &amp; Juknis Lomba *</label>
+            <textarea id="addCompJuknis" class="form-control" rows="5" placeholder="Tuliskan aturan teknis, durasi, dan kriteria penilaian..." required></textarea>
+          </div>
+          <button type="submit" class="btn btn-hunter" style="width: 100%;">Simpan Cabang Lomba</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Edit Juknis -->
+  <div class="modal-overlay" id="editJuknisModal">
+    <div class="modal-box">
+      <div class="modal-head">
+        <h3 id="editJuknisTitle">Ubah Kisi-Kisi &amp; Juknis</h3>
+        <button class="close-x" onclick="closeModal('editJuknisModal')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form onsubmit="submitEditJuknis(event)">
+          <input type="hidden" id="editJuknisCompId">
+          <div class="form-group">
+            <label>Isi Kisi-Kisi / Juknis</label>
+            <textarea id="editJuknisTextarea" class="form-control" rows="8" required></textarea>
+          </div>
+          <button type="submit" class="btn btn-hunter" style="width: 100%;">Simpan Perubahan</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Add New Panitia Admin -->
+  <div class="modal-overlay" id="addPanitiaModal">
+    <div class="modal-box">
+      <div class="modal-head">
+        <h3>Tambah Akun Panitia Baru</h3>
+        <button class="close-x" onclick="closeModal('addPanitiaModal')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="alert-box alert-brass">
+          Akun panitia yang ditambahkan di sini akan langsung dapat digunakan untuk login ke Ruang Kontrol.
+        </div>
+        <form onsubmit="submitNewPanitiaAdmin(event)">
+          <div class="form-group">
+            <label>Username / ID Panitia *</label>
+            <input type="text" id="newPanitiaId" class="form-control mono" placeholder="Contoh: panitiabahasa / osis02" required>
+          </div>
+          <div class="form-group">
+            <label>Nama Lengkap Panitia / Guru *</label>
+            <input type="text" id="newPanitiaName" class="form-control" placeholder="Contoh: Bu Ratna (Kesiswaan)" required>
+          </div>
+          <div class="form-group">
+            <label>Jabatan / Peran</label>
+            <input type="text" id="newPanitiaRole" class="form-control" placeholder="Contoh: Koordinator Lomba / Juri" value="Panitia Lomba">
+          </div>
+          <div class="form-group">
+            <label>Password Akun Panitia *</label>
+            <input type="password" id="newPanitiaPw" class="form-control mono" placeholder="Tentukan password panitia" required>
+          </div>
+          <button type="submit" class="btn btn-hunter" style="width: 100%; padding: 11px;">
+            Simpan &amp; Aktifkan Akun Panitia
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast-container" id="toastContainer"></div>
+
+  <footer>
+    <div class="container">
+      <strong class="serif">Ayo Lomba</strong> &mdash; Katalog &amp; Portal Perlombaan Sekolah Berbasis Python
+      <div style="font-size: 11.5px; margin-top: 3px;">Editorial Warm Cream &amp; Hunter Green Edition &bull; Rekap Excel Terpusat</div>
+    </div>
+  </footer>
+
+  <script src="/static/js/app.js"></script>
+  <script src="/public/js/app.js"></script>
+</body>
+</html>
