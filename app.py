@@ -6,7 +6,7 @@ import threading
 from datetime import datetime
 from functools import wraps
 from io import BytesIO
-from flask import Flask, render_template, request, jsonify, send_file, session
+from flask import Flask, render_template, request, jsonify, send_file, send_from_directory, session
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -210,6 +210,18 @@ def panitia_required(fn):
             }), 401
         return fn(*args, **kwargs)
     return wrapper
+
+
+@app.route('/static/<path:filename>')
+def serve_static(filename):
+    static_dir = os.path.join(BASE_DIR, 'static')
+    return send_from_directory(static_dir, filename)
+
+
+@app.route('/public/<path:filename>')
+def serve_public(filename):
+    public_dir = os.path.join(BASE_DIR, 'public')
+    return send_from_directory(public_dir, filename)
 
 
 @app.route('/')
