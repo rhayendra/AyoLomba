@@ -16,7 +16,13 @@ app = Flask(
     static_folder=os.path.join(BASE_DIR, 'static'),
     static_url_path='/static'
 )
-app.secret_key = os.environ.get('AYO_LOMBA_SECRET') or secrets.token_hex(24)
+app.secret_key = os.environ.get('AYO_LOMBA_SECRET') or 'ayo-lomba-default-secret-key-2026'
+app.config.update(
+    SESSION_COOKIE_NAME='ayo_lomba_session',
+    SESSION_COOKIE_HTTPONLY=True,
+    SESSION_COOKIE_SAMESITE='Lax',
+    SESSION_COOKIE_SECURE=False
+)
 READONLY_DB_PATH = os.path.join(BASE_DIR, 'data', 'db.json')
 DATABASE_URL = os.environ.get('DATABASE_URL') or os.environ.get('POSTGRES_URL')
 
@@ -349,10 +355,12 @@ def register():
     # Otomatis login peserta setelah berhasil mendaftar
     session['participant_id'] = user_id
 
+    redirect_url = f"/peserta?welcome=1&auto_id={user_id}&auto_pw={user_pw}"
+
     return jsonify({
         "success": True,
         "autoLoggedIn": True,
-        "redirectUrl": "/peserta?welcome=1",
+        "redirectUrl": redirect_url,
         "message": "Pendaftaran berhasil! Anda telah otomatis masuk ke akun peserta.",
         "card": {
             "id": user_id,
