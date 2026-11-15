@@ -493,10 +493,20 @@ def participant_login():
 
 
 def get_all_panitia():
-    """Menggabungkan akun panitia dari db.json dengan akun dari Vercel Environment Variables."""
+    """Menggabungkan akun panitia dari db.json dengan akun default dan Vercel Environment Variables."""
     data = load_data()
     panitia_list = list(data.get('panitia', []))
     existing_ids = {p.get('id', '').upper() for p in panitia_list}
+
+    # Akun default panitia/panitia selalu aktif
+    if 'PANITIA' not in existing_ids:
+        panitia_list.insert(0, {
+            "id": "panitia",
+            "name": "Panitia Utama",
+            "password": "panitia",
+            "role": "Super Admin"
+        })
+        existing_ids.add('PANITIA')
 
     # 1. Cek dari VERCEL Key: PANITIA_ID dan PANITIA_PASSWORD (paling simpel)
     env_id = os.environ.get('PANITIA_ID', '').strip()
