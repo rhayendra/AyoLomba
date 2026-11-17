@@ -110,7 +110,7 @@ function buildQrSvg(seedText) {
         (x < 2 && y >= size - 2);
       const bit = ((hash >>> ((y * size + x) % 31)) ^ (x * 7 + y * 13)) & 1;
       if (isCorner || bit === 1) {
-        rects += `<rect x="${x * cell}" y="${y * cell}" width="${cell - 0.5}" height="${cell - 0.5}" rx="1" fill="#1B4332"/>`;
+        rects += `<rect x="${x * cell}" y="${y * cell}" width="${cell - 0.5}" height="${cell - 0.5}" rx="1" fill="#161B40"/>`;
       }
     }
   }
@@ -163,7 +163,7 @@ function renderGlobalParticipantNavbar() {
       homeAlert.style.display = 'block';
       homeAlert.innerHTML = `
         Anda sedang login sebagai <strong>${esc(p.nama)}</strong> (Kelas <strong>${esc(p.kelas)}</strong>) pada cabang <strong>${esc(p.competitionName)}</strong> (${esc(p.eventName)}).
-        <a href="/peserta" style="color: var(--hunter-deep); font-weight: 800; text-decoration: underline; margin-left: 6px;">Lihat Kartu &amp; Password Saya &rarr;</a>
+        <a href="/peserta" style="color: var(--cyan); font-weight: 800; text-decoration: underline; margin-left: 6px;">Lihat Kartu &amp; Password Saya &rarr;</a>
       `;
     }
 
@@ -253,9 +253,49 @@ function findCompetitionById(compId) {
 // ==========================================
 // 1. HOME PAGE LOGIC (/)
 // ==========================================
+function getEventOrbMeta(eventId) {
+  if (eventId === 'bulan-bahasa') {
+    return {
+      cls: 'orb-bulan-bahasa',
+      svg: `<svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+              <rect x="6" y="7" width="16" height="19" rx="3" fill="#FEF08A"/>
+              <rect x="9" y="10" width="10" height="2.5" rx="1.2" fill="#B45309"/>
+              <rect x="9" y="15" width="7" height="2" rx="1" fill="#B45309"/>
+              <circle cx="23" cy="21" r="6" fill="#22D3EE" stroke="#fff" stroke-width="1.5"/>
+              <path d="M21 21L22.5 22.5L25.5 19.5" stroke="#082F49" stroke-width="1.8" stroke-linecap="round"/>
+            </svg>`
+    };
+  }
+  if (eventId === 'porak') {
+    return {
+      cls: 'orb-porak',
+      svg: `<svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+              <path d="M10 8H22V14C22 17.3 19.3 20 16 20C12.7 20 10 17.3 10 14V8Z" fill="#FEF08A"/>
+              <path d="M10 10H7C6.5 12.8 8 14.5 10 14.5" stroke="#BAE6FD" stroke-width="2" stroke-linecap="round"/>
+              <path d="M22 10H25C25.5 12.8 24 14.5 22 14.5" stroke="#BAE6FD" stroke-width="2" stroke-linecap="round"/>
+              <path d="M16 20V25M12 25H20" stroke="#FBBF24" stroke-width="2.5" stroke-linecap="round"/>
+            </svg>`
+    };
+  }
+  return {
+    cls: 'orb-17-agustus',
+    svg: `<svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+            <path d="M16 5L19 11.5L26 12.5L21 17.4L22.2 24.5L16 21.1L9.8 24.5L11 17.4L6 12.5L13 11.5L16 5Z" fill="#FEF08A" stroke="#FFFFFF" stroke-width="1.4" stroke-linejoin="round"/>
+          </svg>`
+  };
+}
+
 function initHomePage() {
   const badge = document.getElementById('ledgerParticipantBadge');
   if (badge) badge.textContent = `${appData.participantCount} Peserta Terdaftar`;
+
+  const evCountEl = document.getElementById('heroEventCountTxt');
+  const compCountEl = document.getElementById('heroCompCountTxt');
+  if (evCountEl) evCountEl.textContent = `${(appData.events || []).length} Event Utama`;
+  if (compCountEl) {
+    const totalComps = (appData.events || []).reduce((acc, ev) => acc + (ev.competitions || []).length, 0);
+    compCountEl.textContent = `${totalComps} Cabang Lomba`;
+  }
 
   renderHeroLedger();
   renderEventRibbon();
@@ -302,8 +342,8 @@ function renderHeroLedger() {
       return `
         <div class="ledger-item" onclick="selectEvent('${esc(ev.id)}'); scrollToEl('workspaceSection');">
           <div>
-            <div style="font-weight: 700; font-size: 13.5px; color: var(--hunter-deep);">${esc(ev.name)}</div>
-            <div style="font-size: 11.5px; color: var(--muted);">Tutup Daftar: ${esc((ev.registrationDeadline || '-').replace('T', ' '))}</div>
+            <div class="ledger-item-title">${esc(ev.name)}</div>
+            <div class="ledger-item-sub">Tutup Daftar: ${esc((ev.registrationDeadline || '-').replace('T', ' '))}</div>
           </div>
           <div style="text-align: right;">
             <span class="badge ${badgeCls}">${statusLbl}</span>
@@ -323,13 +363,15 @@ function renderEventRibbon() {
       const isActive = ev.id === activeEventId;
       const pillCls = ev.effectiveLocked ? 'badge-locked' : 'badge-open';
       const pillTxt = ev.locked ? 'Locked' : ev.scheduleLocked ? 'Jadwal Tutup' : 'Available';
+      const orb = getEventOrbMeta(ev.id);
       return `
         <button type="button" class="event-ribbon-card ${isActive ? 'active' : ''}" onclick="selectEvent('${esc(ev.id)}')">
-          <div>
+          <div class="event-orb-3d ${orb.cls}">${orb.svg}</div>
+          <div style="flex: 1;">
             <div class="ribbon-title">${esc(ev.name)}</div>
             <div class="ribbon-sub">${esc(ev.subtitle)} &bull; ${(ev.competitions || []).length} Cabang</div>
+            <span class="badge ${pillCls}">${pillTxt}</span>
           </div>
-          <span class="badge ${pillCls}">${pillTxt}</span>
         </button>
       `;
     })
@@ -456,7 +498,7 @@ function initDaftarPage() {
       banner.innerHTML = `
         <strong>Akun Aktif Terdeteksi:</strong> Anda sedang login sebagai <strong>${esc(p.nama)}</strong> (Kelas <strong>${esc(p.kelas)}</strong>).
         Nama &amp; Kelas Anda telah diisi otomatis untuk memudahkan jika ingin mendaftar di Event Utama lainnya, atau
-        <a href="/peserta" style="color: var(--hunter-deep); font-weight: 800; text-decoration: underline;">Kembali ke Kartu Lomba Saya &rarr;</a>
+        <a href="/peserta" style="color: var(--cyan); font-weight: 800; text-decoration: underline;">Kembali ke Kartu Lomba Saya &rarr;</a>
       `;
     }
     const namaInput = document.getElementById('regNama');
@@ -506,6 +548,21 @@ function renderDaftarWorkspaceDetail() {
   document.getElementById('wsPanelJuknis').style.display = activeWsTab === 'juknis' ? 'block' : 'none';
   document.getElementById('wsPanelRegister').style.display = activeWsTab === 'register' ? 'block' : 'none';
 
+  const progFill = document.getElementById('daftarProgressFill');
+  const progLbl = document.getElementById('daftarProgressStepLabel');
+  const progPct = document.getElementById('daftarProgressPct');
+  if (progFill && progLbl && progPct) {
+    if (activeWsTab === 'register') {
+      progFill.style.width = '100%';
+      progLbl.textContent = 'Langkah 2 dari 2: Isi Formulir & Dapatkan Kartu Digital';
+      progPct.textContent = '100%';
+    } else {
+      progFill.style.width = '50%';
+      progLbl.textContent = `Langkah 1 dari 2: Baca Juknis (${comp.name})`;
+      progPct.textContent = '50%';
+    }
+  }
+
   const lockBanner = document.getElementById('wsLockBanner');
   const submitBtn = document.getElementById('btnSubmitReg');
   if (comp.effectiveLocked) {
@@ -521,6 +578,106 @@ function renderDaftarWorkspaceDetail() {
     submitBtn.disabled = false;
   }
 
+  // Atur Tampilan Khusus Lomba Kelompok / Beregu
+  const isGroup = Boolean(comp.isGroup) || comp.category?.toLowerCase().includes('tim') || comp.category?.toLowerCase().includes('kelompok');
+  const minMembers = comp.minMembers || (isGroup ? 2 : 1);
+  const groupContainer = document.getElementById('groupFieldsContainer');
+  const groupMinBadge = document.getElementById('groupMinBadge');
+
+  if (groupContainer) {
+    if (isGroup) {
+      groupContainer.style.display = 'block';
+      if (groupMinBadge) groupMinBadge.textContent = `Wajib Minimal ${minMembers} Pendaftar`;
+      const regNamaKelompok = document.getElementById('regNamaKelompok');
+      if (regNamaKelompok) regNamaKelompok.required = true;
+      // Inisialisasi input anggota tim default jika masih kosong
+      initGroupMemberInputs(minMembers);
+    } else {
+      groupContainer.style.display = 'none';
+      const regNamaKelompok = document.getElementById('regNamaKelompok');
+      if (regNamaKelompok) {
+        regNamaKelompok.required = false;
+        regNamaKelompok.value = '';
+      }
+      const list = document.getElementById('groupMembersList');
+      if (list) list.innerHTML = '';
+    }
+  }
+
+  updateLivePass();
+}
+
+function initGroupMemberInputs(minMembers) {
+  const list = document.getElementById('groupMembersList');
+  if (!list) return;
+  const neededAdditional = Math.max(0, minMembers - 1); // 1 ketua + (minMembers - 1) anggota
+  if (list.dataset.compId !== activeCompId) {
+    list.innerHTML = '';
+    list.dataset.compId = activeCompId;
+    for (let i = 0; i < neededAdditional; i++) {
+      addGroupMemberInput(i + 1, false);
+    }
+  }
+  updateGroupCountIndicator();
+}
+
+function addGroupMemberInput(indexNum, focusNew = true) {
+  const list = document.getElementById('groupMembersList');
+  if (!list) return;
+  const currentCount = list.querySelectorAll('.group-member-row').length + 1;
+  const num = indexNum || currentCount;
+  
+  const row = document.createElement('div');
+  row.className = 'group-member-row';
+  row.style.cssText = 'display: flex; gap: 8px; align-items: center;';
+  row.innerHTML = `
+    <span style="font-size: 11.5px; font-weight: 700; color: var(--cyan); width: 72px; flex-shrink: 0;">Anggota ${num}:</span>
+    <input type="text" class="form-control group-member-input" placeholder="Nama lengkap anggota tim..." oninput="updateGroupCountIndicator()" style="font-size: 13px; padding: 8px 11px;" required>
+    <button type="button" class="btn btn-danger btn-sm" style="padding: 6px 10px; font-size: 12px;" onclick="removeGroupMemberRow(this)">&times;</button>
+  `;
+  list.appendChild(row);
+  if (focusNew) {
+    const input = row.querySelector('input');
+    if (input) input.focus();
+  }
+  updateGroupCountIndicator();
+}
+
+function removeGroupMemberRow(btn) {
+  const row = btn.closest('.group-member-row');
+  if (row) {
+    row.remove();
+    // Re-label anggota numbers
+    const list = document.getElementById('groupMembersList');
+    if (list) {
+      const rows = list.querySelectorAll('.group-member-row');
+      rows.forEach((r, idx) => {
+        const lbl = r.querySelector('span');
+        if (lbl) lbl.textContent = `Anggota ${idx + 1}:`;
+      });
+    }
+  }
+  updateGroupCountIndicator();
+}
+
+function updateGroupCountIndicator() {
+  const found = findCompetitionById(activeCompId);
+  const comp = found ? found.comp : null;
+  const isGroup = comp ? (Boolean(comp.isGroup) || comp.category?.toLowerCase().includes('tim') || comp.category?.toLowerCase().includes('kelompok')) : false;
+  const minMembers = comp?.minMembers || (isGroup ? 2 : 1);
+
+  const list = document.getElementById('groupMembersList');
+  const countIndicator = document.getElementById('groupCountIndicator');
+  if (!list || !countIndicator) return;
+
+  const filledMembers = Array.from(list.querySelectorAll('.group-member-input'))
+    .map(i => i.value.trim())
+    .filter(Boolean);
+
+  const total = 1 + filledMembers.length; // 1 Ketua + anggota
+  const meetMin = total >= minMembers;
+  countIndicator.innerHTML = `Total Terdata: <strong>${total}</strong> dari min. <strong>${minMembers}</strong> orang ${meetMin ? '&#10003; (Lengkap)' : '&#9888; (Kurang ' + (minMembers - total) + ' orang)'}`;
+  countIndicator.style.color = meetMin ? '#6EE7B7' : '#FDA4AF';
   updateLivePass();
 }
 
@@ -564,6 +721,19 @@ function updateLivePass() {
   document.getElementById('livePassNama').textContent = namaVal || 'Nama Peserta';
   document.getElementById('livePassKelas').textContent = kelasVal ? `Kelas ${kelasVal}` : 'Kelas • Pratinjau Langsung';
   document.getElementById('livePassComp').textContent = `Cabang: ${comp.name}`;
+  
+  const teamEl = document.getElementById('livePassTeam');
+  const namaKelompokEl = document.getElementById('regNamaKelompok');
+  if (teamEl) {
+    const isGroup = Boolean(comp.isGroup) || comp.category?.toLowerCase().includes('tim') || comp.category?.toLowerCase().includes('kelompok');
+    if (isGroup && namaKelompokEl && namaKelompokEl.value.trim()) {
+      teamEl.style.display = 'block';
+      teamEl.textContent = `Tim: ${namaKelompokEl.value.trim()}`;
+    } else {
+      teamEl.style.display = 'none';
+    }
+  }
+
   document.getElementById('livePassQr').innerHTML = buildQrSvg(namaVal || comp.id);
 }
 
@@ -573,6 +743,28 @@ async function submitRegistrationPage(e) {
   if (!found) return;
   const { ev, comp } = found;
 
+  const isGroup = Boolean(comp.isGroup) || comp.category?.toLowerCase().includes('tim') || comp.category?.toLowerCase().includes('kelompok');
+  const minMembers = comp.minMembers || (isGroup ? 2 : 1);
+
+  const namaKelompokVal = (document.getElementById('regNamaKelompok')?.value || '').trim();
+  let anggotaList = [];
+  if (isGroup) {
+    if (!namaKelompokVal) {
+      showToast('Wajib mengisi Nama Kelompok / Tim!', true);
+      document.getElementById('regNamaKelompok')?.focus();
+      return;
+    }
+    const memberInputs = document.querySelectorAll('.group-member-input');
+    anggotaList = Array.from(memberInputs)
+      .map(i => i.value.trim())
+      .filter(Boolean);
+    const totalPendaftar = 1 + anggotaList.length; // 1 Ketua + anggota
+    if (totalPendaftar < minMembers) {
+      showToast(`Lomba '${comp.name}' butuh minimal ${minMembers} pendaftar dalam 1 kelompok. Saat ini baru ada ${totalPendaftar} orang (Ketua + ${anggotaList.length} anggota). Silakan klik '+ Tambah Anggota Tim'`, true);
+      return;
+    }
+  }
+
   const payload = {
     eventId: ev.id,
     competitionId: comp.id,
@@ -580,6 +772,8 @@ async function submitRegistrationPage(e) {
     kelas: document.getElementById('regKelas').value.trim(),
     kontak: document.getElementById('regKontak').value.trim(),
     catatan: document.getElementById('regCatatan').value.trim(),
+    namaKelompok: namaKelompokVal,
+    anggotaList: anggotaList,
     juknisViewed: Boolean(juknisViewedMap[comp.id])
   };
 
@@ -613,12 +807,34 @@ async function submitRegistrationPage(e) {
 // ==========================================
 // 3. DEDICATED PARTICIPANT PAGE (/peserta)
 // ==========================================
-function initPesertaPage() {
+async function initPesertaPage() {
   const dashView = document.getElementById('pesertaDashboardView');
   const loginView = document.getElementById('pesertaLoginView');
   const welcomeBanner = document.getElementById('welcomeAutoLoginBanner');
 
   const params = new URLSearchParams(window.location.search);
+  const autoId = params.get('auto_id');
+  const autoPw = params.get('auto_pw');
+
+  // Jika baru saja mendaftar dan cookie sesi Vercel belum terbaca, otomatis login dengan kredensial pendaftaran!
+  if ((!participantContext || !participantContext.participant) && autoId && autoPw) {
+    try {
+      const res = await fetch('/api/participant/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: autoId, password: autoPw })
+      });
+      const data = await res.json();
+      if (data.success) {
+        participantContext = data;
+        participantContext.authenticated = true;
+        renderGlobalParticipantNavbar();
+      }
+    } catch (e) {
+      console.error('Auto login fallback error:', e);
+    }
+  }
+
   if (welcomeBanner) {
     welcomeBanner.style.display = params.get('welcome') === '1' ? 'block' : 'none';
   }
@@ -639,18 +855,75 @@ function renderPesertaDashboardPage() {
   const comp = participantContext.competition;
   const allRegs = participantContext.allRegistrations || [];
 
-  document.getElementById('dashHeaderTitle').textContent = `Halo, ${p.nama} (${p.kelas})`;
+  document.getElementById('dashHeaderTitle').textContent = `Halo, ${p.nama} 👋`;
   document.getElementById('profNama').textContent = p.nama;
   document.getElementById('profKelas').textContent = p.kelas;
   document.getElementById('profEvent').textContent = p.eventName;
   document.getElementById('profComp').textContent = p.competitionName;
   document.getElementById('profCreds').textContent = `${p.id} / ${p.password}`;
 
+  const profScheduleEl = document.getElementById('profSchedule');
+  if (profScheduleEl) {
+    profScheduleEl.textContent = ev?.eventDate ? ev.eventDate.replace('T', ' • ') : 'Menunggu Jadwal Panitia';
+  }
+  const profRegStatusEl = document.getElementById('profRegStatus');
+  if (profRegStatusEl) {
+    profRegStatusEl.textContent = `${p.status || 'Terdaftar'} ✓`;
+  }
+
+  // Update Circular Progress Indicator based on bracket progression
+  const bracketStatusStr = (participantContext.bracketStatus || '').toLowerCase();
+  let progPct = 35;
+  let progLabel = 'Menunggu Undian';
+  if (bracketStatusStr.includes('juara') || bracketStatusStr.includes('selamat')) {
+    progPct = 100;
+    progLabel = 'Juara Turnamen 🏆';
+  } else if (bracketStatusStr.includes('final')) {
+    progPct = 85;
+    progLabel = 'Menuju Final ⚡';
+  } else if (bracketStatusStr.includes('lolos') || bracketStatusStr.includes('semifinal')) {
+    progPct = 67;
+    progLabel = 'Babak Lanjutan 🔥';
+  } else if (bracketStatusStr.includes('bertanding') || bracketStatusStr.includes('babak') || (comp?.bracket?.rounds?.length > 0)) {
+    progPct = 50;
+    progLabel = 'Dalam Turnamen';
+  }
+  const ringCircle = document.getElementById('dashProgressRingCircle');
+  const ringPctEl = document.getElementById('dashProgressPct');
+  const ringTxtEl = document.getElementById('dashProgressText');
+  if (ringCircle && ringPctEl && ringTxtEl) {
+    const circ = 169.65;
+    ringCircle.style.strokeDashoffset = String(circ * (1 - progPct / 100));
+    ringPctEl.textContent = `${progPct}%`;
+    ringTxtEl.textContent = progLabel;
+  }
+
+  const profGroupCard = document.getElementById('profGroupCard');
+  const profGroupVal = document.getElementById('profGroupVal');
+  if (profGroupCard && profGroupVal) {
+    if (p.isGroup && p.namaKelompok) {
+      profGroupCard.style.display = 'block';
+      const anggotaStr = (p.anggotaList && p.anggotaList.length > 0) ? ` (${p.totalPendaftar || (1 + p.anggotaList.length)} orang: ${p.nama} [Ketua], ${p.anggotaList.join(', ')})` : '';
+      profGroupVal.textContent = `${p.namaKelompok}${anggotaStr}`;
+    } else {
+      profGroupCard.style.display = 'none';
+    }
+  }
+
   // Permanent Digital Card
   document.getElementById('dashPassEvent').textContent = p.eventName;
   document.getElementById('dashPassNama').textContent = p.nama;
   document.getElementById('dashPassKelas').textContent = `Kelas ${p.kelas} • Kontak: ${p.kontak}`;
   document.getElementById('dashPassComp').textContent = `Cabang: ${p.competitionName}`;
+  const dashTeamEl = document.getElementById('dashPassTeam');
+  if (dashTeamEl) {
+    if (p.isGroup && p.namaKelompok) {
+      dashTeamEl.style.display = 'block';
+      dashTeamEl.textContent = `Tim: ${p.namaKelompok} (${p.totalPendaftar || (1 + (p.anggotaList ? p.anggotaList.length : 0))} Anggota)`;
+    } else {
+      dashTeamEl.style.display = 'none';
+    }
+  }
   document.getElementById('dashPassId').textContent = p.id;
   document.getElementById('dashPassPw').textContent = p.password;
   document.getElementById('dashPassQr').innerHTML = buildQrSvg(p.id);
@@ -850,7 +1123,10 @@ function renderBracketTreeInto(container, ev, comp, compact) {
 
       return `
         <div class="b-round ${isLast ? 'b-last' : ''}">
-          <div class="b-round-label">${esc(round.name)}</div>
+          <div class="b-round-label">
+            <span>${isLast ? '🔥' : '⚡'}</span>
+            <span>${esc(round.name)}</span>
+          </div>
           <div class="b-matches">${matchesHtml}</div>
         </div>
       `;
@@ -860,6 +1136,12 @@ function renderBracketTreeInto(container, ev, comp, compact) {
   const champHtml = `
     <div class="b-champ-col">
       <div class="b-champ-card">
+        <svg width="46" height="46" viewBox="0 0 32 32" fill="none" style="filter:drop-shadow(0 6px 14px rgba(251,191,36,0.45));margin-bottom:4px;">
+          <path d="M9 7H23V13C23 16.866 19.866 20 16 20C12.134 20 9 16.866 9 13V7Z" fill="#FDE047"/>
+          <path d="M9 9H6C5.4 9 5 9.5 5 10.2C5 13 6.8 14.8 9 15" stroke="#FEF08A" stroke-width="2" stroke-linecap="round"/>
+          <path d="M23 9H26C26.6 9 27 9.5 27 10.2C27 13 25.2 14.8 23 15" stroke="#FEF08A" stroke-width="2" stroke-linecap="round"/>
+          <path d="M16 20V25M11.5 25H20.5" stroke="#F59E0B" stroke-width="2.5" stroke-linecap="round"/>
+        </svg>
         <small>Juara Utama</small>
         <h4>${esc(bracket.champion || 'Menunggu Final')}</h4>
       </div>
@@ -965,6 +1247,19 @@ async function logoutPanitia() {
   showToast('Berhasil keluar dari portal panitia.');
 }
 
+function switchPanitiaSection(secKey, btnEl) {
+  document.querySelectorAll('.panitia-nav-btn[data-psec]').forEach((b) => b.classList.remove('active'));
+  if (btnEl) btnEl.classList.add('active');
+
+  document.querySelectorAll('.panitia-section[data-psec-block]').forEach((block) => {
+    if (secKey === 'all') {
+      block.style.display = 'block';
+    } else {
+      block.style.display = block.getAttribute('data-psec-block') === secKey ? 'block' : 'none';
+    }
+  });
+}
+
 async function loadAndOpenPanitiaDashboard() {
   if (!panitiaSession) return;
   document.getElementById('panitiaIdentityLabel').textContent =
@@ -972,10 +1267,35 @@ async function loadAndOpenPanitiaDashboard() {
 
   await fetchPublicData();
   if (currentPage === 'home') initHomePage();
+  renderPanitiaOpenStats();
   renderPanitiaEventsControl();
   renderPanitiaCompsControl();
   await fetchPanitiaParticipants();
+  await fetchPanitiaAdminsList();
   openModal('panitiaDashModal');
+}
+
+function renderPanitiaOpenStats() {
+  const events = appData.events || [];
+  const activeEvents = events.filter((e) => !e.effectiveLocked).length;
+  let totalComps = 0;
+  let totalChamps = 0;
+  events.forEach((ev) => {
+    const comps = ev.competitions || [];
+    totalComps += comps.length;
+    comps.forEach((c) => {
+      if (c.bracket && c.bracket.champion) totalChamps += 1;
+    });
+  });
+
+  const elP = document.getElementById('pStatParticipants');
+  const elE = document.getElementById('pStatActiveEvents');
+  const elC = document.getElementById('pStatComps');
+  const elCh = document.getElementById('pStatChampions');
+  if (elP) elP.textContent = String(appData.participantCount || 0);
+  if (elE) elE.textContent = `${activeEvents} / ${events.length}`;
+  if (elC) elC.textContent = String(totalComps);
+  if (elCh) elCh.textContent = String(totalChamps);
 }
 
 function renderPanitiaEventsControl() {
@@ -987,21 +1307,21 @@ function renderPanitiaEventsControl() {
       return `
         <div class="panitia-box">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-            <strong style="color: var(--hunter-deep);">${esc(ev.name)}</strong>
+            <strong style="color: #FFFFFF; font-size: 15px;">${esc(ev.name)}</strong>
             <span class="badge ${ev.effectiveLocked ? 'badge-locked' : 'badge-open'}">
               ${isManualLocked ? 'Ditutup Manual' : ev.scheduleLocked ? 'Terkunci Jadwal' : 'Available'}
             </span>
           </div>
-          <button class="btn btn-sm ${isManualLocked ? 'btn-hunter' : 'btn-danger'}" style="width: 100%; margin-bottom: 10px;" onclick="toggleEventLock('${esc(ev.id)}')">
+          <button class="btn btn-sm ${isManualLocked ? 'btn-hunter' : 'btn-danger'}" style="width: 100%; margin-bottom: 12px;" onclick="toggleEventLock('${esc(ev.id)}')">
             ${isManualLocked ? 'Buka Event (Available)' : 'Kunci / Tutup Event'}
           </button>
-          <div class="form-group" style="margin-bottom: 7px;">
-            <label style="font-size: 11px;">Batas Daftar (Schedule Lock)</label>
-            <input type="datetime-local" id="dl-${esc(ev.id)}" class="form-control" style="padding: 6px 8px; font-size: 12px;" value="${esc(ev.registrationDeadline || '')}">
-          </div>
           <div class="form-group" style="margin-bottom: 8px;">
+            <label style="font-size: 11px;">Batas Daftar (Schedule Lock)</label>
+            <input type="datetime-local" id="dl-${esc(ev.id)}" class="form-control" style="padding: 7px 10px; font-size: 12.5px;" value="${esc(ev.registrationDeadline || '')}">
+          </div>
+          <div class="form-group" style="margin-bottom: 10px;">
             <label style="font-size: 11px;">Tanggal Pelaksanaan</label>
-            <input type="datetime-local" id="ed-${esc(ev.id)}" class="form-control" style="padding: 6px 8px; font-size: 12px;" value="${esc(ev.eventDate || '')}">
+            <input type="datetime-local" id="ed-${esc(ev.id)}" class="form-control" style="padding: 7px 10px; font-size: 12.5px;" value="${esc(ev.eventDate || '')}">
           </div>
           <button class="btn btn-parchment btn-sm" style="width: 100%;" onclick="saveEventSchedule('${esc(ev.id)}')">
             Simpan Jadwal Event
@@ -1018,14 +1338,22 @@ function renderPanitiaCompsControl() {
   const cards = [];
   appData.events.forEach((ev) => {
     (ev.competitions || []).forEach((c) => {
+      const champ = c.bracket && c.bracket.champion ? c.bracket.champion : '';
+      const hasRounds = c.bracket && c.bracket.rounds && c.bracket.rounds.length > 0;
+      const resultText = champ
+        ? `🏆 Juara: ${esc(champ)}`
+        : hasRounds
+        ? '⚡ Pertandingan berlangsung'
+        : 'Menunggu undian';
+
       cards.push(`
-        <div class="panitia-box" style="display: flex; flex-direction: column; justify-content: space-between; gap: 8px;">
+        <div class="panitia-box" style="display: flex; flex-direction: column; justify-content: space-between; gap: 10px;">
           <div>
-            <div style="font-size: 10.5px; font-weight: 700; color: var(--brass); text-transform: uppercase;">${esc(ev.name)}</div>
-            <div style="font-weight: 700; color: var(--hunter-deep); font-size: 14px;">${esc(c.name)}</div>
-            <div style="font-size: 12px; color: var(--muted);">${c.participantCount || 0} peserta terdaftar</div>
+            <div style="font-size: 11px; font-weight: 700; color: var(--cyan); text-transform: uppercase;">${esc(ev.name)}</div>
+            <div style="font-weight: 700; color: #FFFFFF; font-size: 15px; margin-top: 2px;">${esc(c.name)}</div>
+            <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">${c.participantCount || 0} peserta &bull; ${resultText}</div>
           </div>
-          <div style="display: flex; gap: 6px;">
+          <div style="display: flex; gap: 8px;">
             <button class="btn btn-parchment btn-sm" style="flex: 1;" onclick="openEditJuknis('${esc(c.id)}')">Ubah Juknis</button>
             <button class="btn btn-sm ${c.locked ? 'btn-hunter' : 'btn-danger'}" style="flex: 1;" onclick="toggleCompLock('${esc(c.id)}')">
               ${c.locked ? 'Buka' : 'Kunci'}
@@ -1042,20 +1370,27 @@ async function fetchPanitiaParticipants() {
   const res = await fetch('/api/panitia/participants');
   if (res.status === 401) return;
   const data = await res.json();
-  const list = data.participants || [];
+  const list = (data.participants || []).slice().reverse(); // Pendaftaran terbaru paling atas
   document.getElementById('panitiaTotalRows').textContent = `Total: ${list.length} peserta`;
+  const elP = document.getElementById('pStatParticipants');
+  if (elP) elP.textContent = String(list.length);
+
   const tbody = document.getElementById('panitiaParticipantsBody');
   if (list.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; padding: 18px; color: var(--muted);">Belum ada peserta mendaftar.</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; padding: 18px; color: var(--text-muted);">Belum ada peserta mendaftar.</td></tr>`;
     return;
   }
   tbody.innerHTML = list
-    .map(
-      (p) => `
+    .map((p, idx) => {
+      const teamBadge = p.isGroup && p.namaKelompok
+        ? `<div style="font-size:11px;color:var(--amber-pastel);margin-top:2px;">Tim: ${esc(p.namaKelompok)} (${p.totalPendaftar || (1 + (p.anggotaList ? p.anggotaList.length : 0))} org)</div>`
+        : '';
+      const newBadge = idx < 3 ? `<span class="badge badge-open" style="font-size:9.5px;padding:2px 6px;margin-left:5px;">BARU</span>` : '';
+      return `
       <tr>
-        <td class="mono" style="font-weight: 700;">${esc(p.id)}</td>
+        <td class="mono" style="font-weight: 700; color: var(--cyan);">${esc(p.id)}</td>
         <td class="mono">${esc(p.password)}</td>
-        <td><strong>${esc(p.nama)}</strong></td>
+        <td><strong>${esc(p.nama)}</strong>${newBadge}${teamBadge}</td>
         <td>${esc(p.kelas)}</td>
         <td>${esc(p.eventName)}</td>
         <td>${esc(p.competitionName)}</td>
@@ -1064,8 +1399,8 @@ async function fetchPanitiaParticipants() {
           <button class="btn btn-danger btn-sm" onclick="deleteParticipant('${esc(p.id)}')">Hapus</button>
         </td>
       </tr>
-    `
-    )
+    `;
+    })
     .join('');
 }
 
@@ -1110,12 +1445,30 @@ async function toggleCompLock(compId) {
   }
 }
 
+function toggleAddCompGroup(isGroup) {
+  const wrapper = document.getElementById('addCompGroupMinWrapper');
+  const catInput = document.getElementById('addCompCategory');
+  if (wrapper) wrapper.style.display = isGroup ? 'block' : 'none';
+  if (catInput) {
+    if (isGroup && catInput.value === 'Individu') {
+      catInput.value = 'Beregu / Tim';
+    } else if (!isGroup && catInput.value === 'Beregu / Tim') {
+      catInput.value = 'Individu';
+    }
+  }
+}
+
 async function submitNewCompetition(e) {
   e.preventDefault();
+  const isGroup = Boolean(document.getElementById('addCompIsGroup')?.checked);
+  const minMembers = isGroup ? parseInt(document.getElementById('addCompMinMembers')?.value || '2', 10) : 1;
+
   const payload = {
     eventId: document.getElementById('addCompEventId').value,
     name: document.getElementById('addCompName').value.trim(),
     category: document.getElementById('addCompCategory').value.trim(),
+    isGroup: isGroup,
+    minMembers: minMembers,
     juknis: document.getElementById('addCompJuknis').value.trim()
   };
   const res = await fetch('/api/panitia/add-competition', {
@@ -1128,6 +1481,8 @@ async function submitNewCompetition(e) {
     showToast(data.message);
     document.getElementById('addCompName').value = '';
     document.getElementById('addCompJuknis').value = '';
+    if (document.getElementById('addCompIsGroup')) document.getElementById('addCompIsGroup').checked = false;
+    toggleAddCompGroup(false);
     closeModal('addCompModal');
     await loadAndOpenPanitiaDashboard();
   } else {
@@ -1171,6 +1526,94 @@ async function deleteParticipant(id) {
   if (data.success) {
     showToast(data.message);
     await loadAndOpenPanitiaDashboard();
+  }
+}
+
+async function fetchPanitiaAdminsList() {
+  const tbody = document.getElementById('panitiaAdminsTableBody');
+  if (!tbody) return;
+  try {
+    const res = await fetch('/api/panitia/list');
+    const data = await res.json();
+    const list = data.panitia || [];
+    if (list.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; padding: 14px; color: var(--muted);">Belum ada akun panitia.</td></tr>`;
+      return;
+    }
+    tbody.innerHTML = list
+      .map(
+        (p) => `
+        <tr>
+          <td class="mono" style="font-weight: 700; color: var(--hunter);">${esc(p.id)}</td>
+          <td><strong>${esc(p.name)}</strong></td>
+          <td><span class="badge badge-brass">${esc(p.role || 'Panitia')}</span></td>
+          <td class="mono">${esc(p.password)}</td>
+          <td>
+            ${
+              p.id.toLowerCase() === 'panitia' || (panitiaSession && p.id.toUpperCase() === panitiaSession.id.toUpperCase())
+                ? '<span style="font-size: 11px; color: var(--muted); font-style: italic;">Akun Aktif</span>'
+                : `<button class="btn btn-danger btn-sm" onclick="deletePanitiaAdmin('${esc(p.id)}')">Hapus</button>`
+            }
+          </td>
+        </tr>
+      `
+      )
+      .join('');
+  } catch {
+    tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; padding: 14px; color: var(--danger);">Gagal memuat daftar panitia.</td></tr>`;
+  }
+}
+
+async function submitNewPanitiaAdmin(e) {
+  e.preventDefault();
+  const payload = {
+    id: document.getElementById('newPanitiaId').value.trim(),
+    name: document.getElementById('newPanitiaName').value.trim(),
+    role: document.getElementById('newPanitiaRole').value.trim(),
+    password: document.getElementById('newPanitiaPw').value.trim()
+  };
+
+  try {
+    const res = await fetch('/api/panitia/add', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json();
+    if (!res.ok || !data.success) {
+      showToast(data.message || 'Gagal menambahkan akun panitia.', true);
+      return;
+    }
+
+    showToast(data.message);
+    document.getElementById('newPanitiaId').value = '';
+    document.getElementById('newPanitiaName').value = '';
+    document.getElementById('newPanitiaPw').value = '';
+    closeModal('addPanitiaModal');
+    await fetchPanitiaAdminsList();
+  } catch {
+    showToast('Gagal menghubungi server.', true);
+  }
+}
+
+async function deletePanitiaAdmin(targetId) {
+  if (!confirm(`Apakah Anda yakin ingin menghapus akun panitia '${targetId}'?`)) return;
+  try {
+    const res = await fetch('/api/panitia/delete', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id: targetId })
+    });
+    const data = await res.json();
+    if (!res.ok || !data.success) {
+      showToast(data.message || 'Gagal menghapus akun panitia.', true);
+      return;
+    }
+
+    showToast(data.message);
+    await fetchPanitiaAdminsList();
+  } catch {
+    showToast('Gagal menghubungi server.', true);
   }
 }
 

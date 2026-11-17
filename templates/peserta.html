@@ -6,13 +6,12 @@
   <title>Akun &amp; Kartu Peserta — Ayo Lomba</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;0,9..144,700;1,9..144,600&family=JetBrains+Mono:wght@500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/static/css/style.css">
-  <link rel="stylesheet" href="/public/css/style.css">
 </head>
 <body data-page="peserta">
 
-  <!-- Editorial Masthead -->
+  <!-- Open Top Masthead -->
   <header class="masthead">
     <div class="masthead-top">
       <div class="container masthead-top-inner">
@@ -21,8 +20,13 @@
       </div>
     </div>
     <div class="container masthead-nav">
-      <a href="/" class="brand" style="text-decoration: none;">
-        <div class="brand-crest">AL</div>
+      <a href="/" class="brand">
+        <div class="brand-crest-3d" aria-hidden="true">
+          <svg width="24" height="24" viewBox="0 0 32 32" fill="none">
+            <path d="M9 7H23V13C23 16.866 19.866 20 16 20C12.134 20 9 16.866 9 13V7Z" fill="#FEF08A"/>
+            <path d="M16 20V25M11.5 25H20.5" stroke="#FBBF24" stroke-width="2.5" stroke-linecap="round"/>
+          </svg>
+        </div>
         <div class="brand-title">
           <h1>Ayo Lomba</h1>
           <span>Dasbor &amp; Kartu Peserta</span>
@@ -37,53 +41,105 @@
     </div>
   </header>
 
-  <main class="container" style="padding-top: 30px; padding-bottom: 60px;">
+  <main class="container" style="padding-top: 34px; padding-bottom: 64px;">
 
-    <!-- View 1: Shown when Participant IS Logged In (Auto-login after register or manual login) -->
+    <!-- View 1: Open Participant Dashboard (NO Card Grid Wrapping Everything) -->
     <div id="pesertaDashboardView" style="display: none;">
-      <div id="welcomeAutoLoginBanner" class="alert-box alert-hunter" style="display: none; font-size: 14px; padding: 14px 18px;">
+      <div id="welcomeAutoLoginBanner" class="alert-box alert-hunter" style="display: none; font-size: 14px; padding: 14px 18px; margin-bottom: 24px;">
         <strong>Selamat! Pendaftaran Berhasil &amp; Anda Telah Otomatis Login.</strong><br>
         Kartu Lomba Digital, ID User, dan Password Anda tersimpan aman di bawah ini. Silakan salin atau cetak kartu Anda kapan saja.
       </div>
 
-      <div style="display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 12px; margin-bottom: 18px;">
-        <div>
-          <div class="issue-tag">Akun Peserta Terverifikasi</div>
-          <h2 class="serif" style="font-size: 30px; color: var(--hunter-deep);" id="dashHeaderTitle">Profil &amp; Kartu Lomba</h2>
+      <!-- Greeting Header + 3D Progress Ring & Mascot (Inspired by Screen 1 "Hello, Billy" + "67%") -->
+      <div class="peserta-greeting-row">
+        <div style="display:flex;align-items:center;gap:18px;flex-wrap:wrap;">
+          <!-- Playful 3D Trophy Companion Icon -->
+          <div aria-hidden="true" style="flex-shrink:0;">
+            <svg width="72" height="72" viewBox="0 0 80 80" fill="none" style="filter:drop-shadow(0 8px 18px rgba(34,211,238,0.28));">
+              <defs>
+                <radialGradient id="orbAvatarBg" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(26 22) rotate(50) scale(55)">
+                  <stop stop-color="#67E8F9"/>
+                  <stop offset="0.55" stop-color="#3B82F6"/>
+                  <stop offset="1" stop-color="#6D28D9"/>
+                </radialGradient>
+              </defs>
+              <circle cx="40" cy="40" r="36" fill="url(#orbAvatarBg)"/>
+              <ellipse cx="40" cy="24" rx="18" ry="8" fill="rgba(255,255,255,0.22)"/>
+              <circle cx="32" cy="40" r="5" fill="#fff"/>
+              <circle cx="48" cy="40" r="5" fill="#fff"/>
+              <circle cx="33" cy="40" r="2.4" fill="#0F172A"/>
+              <circle cx="49" cy="40" r="2.4" fill="#0F172A"/>
+              <path d="M33 50C36 54 44 54 47 50" stroke="#ECFEFF" stroke-width="2.8" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div>
+            <div class="issue-tag" style="margin-bottom:6px;">Akun Peserta Terverifikasi</div>
+            <h2 style="font-size:clamp(26px, 3.4vw, 36px);font-weight:800;color:#fff;" id="dashHeaderTitle">Halo, Peserta 👋</h2>
+          </div>
         </div>
-        <div id="multiCardSwitcher" style="display: none; gap: 6px; flex-wrap: wrap; align-items: center;"></div>
+
+        <div style="display:flex;align-items:center;gap:22px;flex-wrap:wrap;">
+          <!-- Circular Match Progress Indicator (Inspired by Screen 1 Ring) -->
+          <div class="progress-ring-box">
+            <svg class="progress-ring-svg" viewBox="0 0 68 68">
+              <defs>
+                <linearGradient id="ringCyanViolet" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#22D3EE"/>
+                  <stop offset="100%" stop-color="#A78BFA"/>
+                </linearGradient>
+              </defs>
+              <circle class="progress-ring-bg" cx="34" cy="34" r="27"></circle>
+              <circle class="progress-ring-fg" id="dashProgressRingCircle" cx="34" cy="34" r="27" stroke-dasharray="169.65" stroke-dashoffset="113"></circle>
+            </svg>
+            <div>
+              <div style="font-size:18px;font-weight:800;color:#fff;" id="dashProgressPct">35%</div>
+              <div style="font-size:11.5px;color:var(--lavender);font-weight:600;" id="dashProgressText">Progress Turnamen</div>
+            </div>
+          </div>
+
+          <div id="multiCardSwitcher" style="display: none; gap: 8px; flex-wrap: wrap; align-items: center;"></div>
+        </div>
       </div>
 
-      <!-- Indikator Nama, Kelas, Event, Cabang, Status -->
-      <div class="profile-info-grid">
-        <div class="profile-stat-card">
+      <!-- Open Information Strip (NO Cards Wrapping Each Stat!) -->
+      <div class="profile-open-metrics">
+        <div class="open-metric-item">
           <div class="p-label">Nama Lengkap Siswa</div>
           <div class="p-val" id="profNama">-</div>
         </div>
-        <div class="profile-stat-card">
+        <div class="open-metric-item">
           <div class="p-label">Kelas</div>
           <div class="p-val" id="profKelas">-</div>
         </div>
-        <div class="profile-stat-card">
+        <div class="open-metric-item">
           <div class="p-label">Event Utama</div>
           <div class="p-val" id="profEvent">-</div>
         </div>
-        <div class="profile-stat-card">
-          <div class="p-label">Cabang Lomba</div>
+        <div class="open-metric-item">
+          <div class="p-label">Cabang Perlombaan</div>
           <div class="p-val" id="profComp">-</div>
         </div>
-        <div class="profile-stat-card">
-          <div class="p-label">ID User &amp; Password</div>
-          <div class="p-val mono" id="profCreds" style="color: var(--hunter-mid);">-</div>
+        <div class="open-metric-item">
+          <div class="p-label">Status Pendaftaran</div>
+          <div class="p-val" id="profRegStatus" style="color:#6EE7B7;">Terdaftar Resmi &#10003;</div>
         </div>
-        <div class="profile-stat-card" id="profGroupCard" style="display: none; background: #FAF5EB; border-color: var(--brass-gold);">
-          <div class="p-label" style="color: var(--hunter-deep);">Kelompok / Tim</div>
-          <div class="p-val" id="profGroupVal" style="font-size: 13px; font-weight: 700; color: var(--hunter-deep);">-</div>
+        <div class="open-metric-item">
+          <div class="p-label">Jadwal Pelaksanaan</div>
+          <div class="p-val" id="profSchedule" style="color:var(--cyan);">-</div>
+        </div>
+        <div class="open-metric-item">
+          <div class="p-label">ID User &amp; Password</div>
+          <div class="p-val mono" id="profCreds" style="color: var(--amber-pastel);">-</div>
+        </div>
+        <div class="open-metric-item" id="profGroupCard" style="display: none;">
+          <div class="p-label" style="color: var(--amber-pastel);">Kelompok / Tim</div>
+          <div class="p-val" id="profGroupVal" style="font-size: 14px; font-weight: 700; color: #FDE047;">-</div>
         </div>
       </div>
 
-      <div class="reg-split" style="grid-template-columns: 0.95fr 1.15fr; gap: 24px;">
-        <!-- Left: Permanent Kartu Lomba Digital -->
+      <!-- Split Open Layout: Digital Participant Card Left + Bracket Progress & Juknis Right -->
+      <div class="reg-split" style="grid-template-columns: 0.92fr 1.18fr; gap: 38px;">
+        <!-- Left: Permanent Digital Participant Pass -->
         <div>
           <div class="pass-card print-pass-target" id="dashPassCard">
             <div class="pass-head">
@@ -94,8 +150,8 @@
               <div>
                 <div class="pass-name" id="dashPassNama">-</div>
                 <div class="pass-sub" id="dashPassKelas">-</div>
-                <div class="pass-sub" style="color: #FBF8F3; margin-top: 6px; font-weight: 600;" id="dashPassComp">-</div>
-                <div class="pass-sub" style="color: #F1D28C; margin-top: 4px; font-size: 11.5px; display: none;" id="dashPassTeam">-</div>
+                <div class="pass-sub" style="color: #ECFEFF; margin-top: 6px; font-weight: 700;" id="dashPassComp">-</div>
+                <div class="pass-sub" style="color: #FDE047; margin-top: 4px; font-size: 12px; font-weight: 700; display: none;" id="dashPassTeam">-</div>
               </div>
               <div class="pass-qr-box" id="dashPassQr"></div>
             </div>
@@ -109,22 +165,22 @@
                 <div class="pass-cred-val" id="dashPassPw">-</div>
               </div>
             </div>
-            <div style="font-size: 11px; color: #D7E8DE; text-align: center; margin-top: 10px;" id="dashPassTime">-</div>
+            <div style="font-size: 11px; color: #C7D2FE; text-align: center; margin-top: 12px;" id="dashPassTime">-</div>
           </div>
 
-          <div style="display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap;">
+          <div style="display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap;">
             <button type="button" class="btn btn-hunter" style="flex: 1;" onclick="copyDashCard()">Salin ID &amp; Password</button>
             <button type="button" class="btn btn-parchment" style="flex: 1;" onclick="window.print()">Cetak / Simpan PDF</button>
             <button type="button" class="btn btn-danger" onclick="logoutParticipant()">Keluar Akun</button>
           </div>
         </div>
 
-        <!-- Right: Bracket Status, Visual Bracket & Juknis -->
+        <!-- Right: Open Bracket Progress & Juknis Section (No Outer Card Box) -->
         <div class="detail-panel">
-          <div class="detail-header">
+          <div class="detail-header" style="padding-bottom: 14px; border-bottom: 1px solid var(--line-soft); margin-bottom: 20px;">
             <div>
-              <span class="badge badge-open">STATUS BAGAN &amp; JUKNIS</span>
-              <h3 style="margin-top: 6px;" id="dashCompTitle">Perkembangan Perlombaan Anda</h3>
+              <span class="badge badge-open">PROGRES &amp; JUKNIS LOMBA</span>
+              <h3 style="margin-top: 8px;" id="dashCompTitle">Perkembangan Perlombaan Anda</h3>
             </div>
           </div>
           <div class="detail-body">
@@ -133,12 +189,12 @@
               <span id="dashBracketStatus">-</span>
             </div>
 
-            <h4 class="serif" style="font-size: 16px; color: var(--hunter-deep); margin: 16px 0 8px;">
+            <h4 style="font-size: 17px; font-weight: 800; color: #FFFFFF; margin: 24px 0 10px;">
               Bagan Pertandingan Cabang Ini
             </h4>
-            <div id="dashBracketTree" style="margin-bottom: 18px;"></div>
+            <div id="dashBracketTree" style="margin-bottom: 26px;"></div>
 
-            <h4 class="serif" style="font-size: 16px; color: var(--hunter-deep); margin: 16px 0 8px;">
+            <h4 style="font-size: 17px; font-weight: 800; color: #FFFFFF; margin: 24px 0 10px;">
               Kisi-Kisi &amp; Juknis Lomba
             </h4>
             <div class="juknis-paper" id="dashJuknisBox" style="margin-bottom: 0;"></div>
@@ -147,36 +203,45 @@
       </div>
     </div>
 
-    <!-- View 2: Shown when Participant IS NOT Logged In -->
-    <div id="pesertaLoginView" style="display: none; max-width: 500px; margin: 20px auto;">
-      <div class="detail-panel">
-        <div class="detail-header">
-          <div>
-            <span class="badge badge-brass">PORTAL PESERTA</span>
-            <h3 style="margin-top: 6px;">Login Akun Peserta</h3>
-          </div>
+    <!-- View 2: Clean Open Login Form When Participant IS NOT Logged In -->
+    <div id="pesertaLoginView" style="display: none; max-width: 520px; margin: 36px auto;">
+      <div style="text-align:center;margin-bottom:24px;">
+        <!-- Standalone 3D Key/Shield Icon -->
+        <svg width="78" height="78" viewBox="0 0 84 84" fill="none" style="filter:drop-shadow(0 12px 24px rgba(34,211,238,0.28));margin-bottom:10px;">
+          <defs>
+            <linearGradient id="shieldGrad" x1="12" y1="8" x2="72" y2="76" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#22D3EE"/>
+              <stop offset="0.55" stop-color="#3B82F6"/>
+              <stop offset="1" stop-color="#7C3AED"/>
+            </linearGradient>
+          </defs>
+          <path d="M42 8L68 18V38C68 56 56.5 69.5 42 75C27.5 69.5 16 56 16 38V18L42 8Z" fill="url(#shieldGrad)"/>
+          <circle cx="42" cy="36" r="7" fill="#FEF08A"/>
+          <path d="M38 42H46L48 54H36L38 42Z" fill="#FEF08A"/>
+        </svg>
+        <div class="issue-tag" style="justify-content:center;">Portal Peserta</div>
+        <h3 style="font-size:28px;font-weight:800;color:#fff;">Masuk ke Akun Peserta</h3>
+        <p style="font-size:13.5px;color:var(--text-secondary);margin-top:6px;">
+          Masukkan <strong>ID User</strong> dan <strong>Password</strong> dari Kartu Lomba Anda untuk memantau profil dan progres bagan.
+        </p>
+      </div>
+
+      <form onsubmit="submitPesertaPageLogin(event)">
+        <div class="form-group">
+          <label>ID User Peserta</label>
+          <input type="text" id="pLoginId" class="form-control mono" placeholder="Contoh: AYO-BB-4821" required>
         </div>
-        <div class="detail-body">
-          <div class="alert-box alert-hunter">
-            Masukkan <strong>ID User</strong> dan <strong>Password</strong> dari Kartu Lomba Anda untuk melihat profil, kartu peserta, dan perkembangan bagan.
-          </div>
-          <form onsubmit="submitPesertaPageLogin(event)">
-            <div class="form-group">
-              <label>ID User Peserta</label>
-              <input type="text" id="pLoginId" class="form-control mono" placeholder="Contoh: AYO-BB-4821" required>
-            </div>
-            <div class="form-group">
-              <label>Password Akun</label>
-              <input type="password" id="pLoginPw" class="form-control mono" placeholder="Masukkan password 6 karakter" required>
-            </div>
-            <button type="submit" class="btn btn-hunter" style="width: 100%; padding: 12px;">
-              Masuk ke Akun Peserta &rarr;
-            </button>
-          </form>
-          <div style="margin-top: 16px; padding-top: 14px; border-top: 1px dashed var(--rule); text-align: center; font-size: 13px;">
-            Belum mendaftar lomba? <a href="/daftar" style="color: var(--hunter); font-weight: 700;">Daftar Lomba Sekarang (Otomatis Login) &rarr;</a>
-          </div>
+        <div class="form-group">
+          <label>Password Akun</label>
+          <input type="password" id="pLoginPw" class="form-control mono" placeholder="Masukkan password 6 karakter" required>
         </div>
+        <button type="submit" class="btn btn-hunter" style="width: 100%; padding: 13px;">
+          Masuk ke Akun Peserta &rarr;
+        </button>
+      </form>
+
+      <div style="margin-top: 22px; padding-top: 18px; border-top: 1px dashed var(--line-soft); text-align: center; font-size: 13.5px; color: var(--text-secondary);">
+        Belum mendaftar lomba? <a href="/daftar" style="color: var(--cyan); font-weight: 700; text-decoration: none;">Daftar Lomba Sekarang (Otomatis Login) &rarr;</a>
       </div>
     </div>
 
@@ -186,11 +251,10 @@
 
   <footer>
     <div class="container">
-      <strong class="serif">Ayo Lomba</strong> &mdash; Portal Akun &amp; Kartu Peserta Resmi
+      <strong>Ayo Lomba</strong> &mdash; Portal Akun &amp; Kartu Peserta Resmi
     </div>
   </footer>
 
   <script src="/static/js/app.js"></script>
-  <script src="/public/js/app.js"></script>
 </body>
 </html>

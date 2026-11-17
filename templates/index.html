@@ -3,34 +3,48 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ayo Lomba — Katalog &amp; Portal Perlombaan Sekolah</title>
+  <title>Ayo Lomba — Portal &amp; Arena Kompetisi Sekolah</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;0,9..144,700;1,9..144,600&family=JetBrains+Mono:wght@500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/static/css/style.css">
-  <link rel="stylesheet" href="/public/css/style.css">
 </head>
 <body data-page="home">
 
-  <!-- Editorial Masthead -->
+  <!-- Open Top Header & Navigation -->
   <header class="masthead">
     <div class="masthead-top">
       <div class="container masthead-top-inner">
-        <span id="topAuthBanner">EDISI RESMI EVENT SEKOLAH &bull; PENGGANTI BROSUR CETAK</span>
+        <span id="topAuthBanner">PORTAL KOMPETISI RESMI SEKOLAH &bull; BULAN BAHASA, PORAK &amp; 17 AGUSTUS</span>
         <span id="serverClockBanner">Memuat waktu server...</span>
       </div>
     </div>
     <div class="container masthead-nav">
-      <a href="/" class="brand" style="text-decoration: none;">
-        <div class="brand-crest">AL</div>
+      <a href="/" class="brand">
+        <!-- 3D Glowing Crest Logo -->
+        <div class="brand-crest-3d" aria-hidden="true">
+          <svg width="26" height="26" viewBox="0 0 32 32" fill="none">
+            <path d="M9 7H23V13C23 16.866 19.866 20 16 20C12.134 20 9 16.866 9 13V7Z" fill="url(#logoCup)"/>
+            <path d="M9 9H6C5.4 9 5 9.5 5 10.2C5 13 6.8 14.8 9 15" stroke="#E0F2FE" stroke-width="2" stroke-linecap="round"/>
+            <path d="M23 9H26C26.6 9 27 9.5 27 10.2C27 13 25.2 14.8 23 15" stroke="#E0F2FE" stroke-width="2" stroke-linecap="round"/>
+            <path d="M16 20V25M11.5 25H20.5" stroke="#FDE047" stroke-width="2.5" stroke-linecap="round"/>
+            <defs>
+              <linearGradient id="logoCup" x1="9" y1="7" x2="23" y2="20" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#FEF08A"/>
+                <stop offset="1" stop-color="#F59E0B"/>
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
         <div class="brand-title">
           <h1>Ayo Lomba</h1>
-          <span>Heritage School Championship</span>
+          <span>School Championship Arena</span>
         </div>
       </a>
 
       <nav class="nav-actions">
         <a href="/" class="btn btn-ghost">Beranda</a>
+        <a href="#workspaceSection" class="btn btn-ghost">Cabang Lomba</a>
         <a href="#bracketSection" class="btn btn-ghost">Bagan Juara</a>
         <a href="/daftar" class="btn btn-parchment" id="navBtnDaftar">Ikuti Lomba</a>
         <div id="navParticipantZone" style="display: inline-flex; align-items: center; gap: 8px; flex-wrap: wrap;">
@@ -41,63 +55,232 @@
     </div>
   </header>
 
-  <!-- Editorial Hero Strip with Countdown Ledger -->
+  <!-- Open Hero Section with Standalone 3D Competition Island Illustration -->
   <section class="editorial-hero">
-    <div class="container hero-grid">
-      <div>
-        <div class="issue-tag">Portal Terpusat &bull; Bulan Bahasa, PORAK &amp; 17 Agustus</div>
-        <h2>Informasi Lomba, <em>Juknis Resmi</em> &amp; Bagan Kejuaraan Sekolah.</h2>
-        <p>
-          Pelajari kisi-kisi setiap perlombaan di katalog beranda, lalu lanjutkan ke halaman khusus pendaftaran.
-          Begitu selesai mendaftar, Anda akan <strong>otomatis login</strong> ke halaman Kartu Peserta sehingga ID &amp; Password tidak akan terlewat.
-        </p>
-        <div id="homeLoggedStudentAlert" style="display: none;" class="alert-box alert-hunter"></div>
-        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-          <a href="/daftar" class="btn btn-hunter">Menuju Halaman Pendaftaran Lomba &rarr;</a>
-          <a href="/peserta" class="btn btn-parchment" id="heroBtnPeserta">Buka Kartu / Login Peserta</a>
+    <div class="container">
+      <div class="hero-grid">
+        <div>
+          <!-- Playful Gamified Pill Indicators -->
+          <div class="game-status-pill">
+            <span class="g-stat-item">
+              <span class="g-stat-dot g-dot-gold">🏆</span>
+              <span id="heroEventCountTxt">3 Event Utama</span>
+            </span>
+            <span class="g-stat-item">
+              <span class="g-stat-dot g-dot-cyan">⚡</span>
+              <span id="heroCompCountTxt">Portal Terpusat</span>
+            </span>
+            <span class="g-stat-item">
+              <span class="g-stat-dot g-dot-pink">★</span>
+              <span id="ledgerParticipantBadge">0 Terdaftar</span>
+            </span>
+          </div>
+
+          <div class="issue-tag">Portal Perlombaan Digital &bull; Modern Open Arena</div>
+          <h2>Buka Peluang Juara, Baca <em>Juknis Resmi</em> &amp; Pantau Bagan Sekolah.</h2>
+          <p>
+            Jelajahi seluruh cabang lomba sekolah dari Bulan Bahasa, PORAK, hingga 17 Agustus dalam satu tempat terbuka.
+            Daftar dalam hitungan detik tanpa ribet NIS/NISN &mdash; akun &amp; kartu peserta Anda langsung aktif otomatis.
+          </p>
+
+          <div id="homeLoggedStudentAlert" style="display: none;" class="alert-box alert-hunter"></div>
+
+          <div style="display: flex; gap: 12px; flex-wrap: wrap; align-items: center;">
+            <a href="/daftar" class="btn btn-hunter">Mulai Daftar Lomba Sekarang &rarr;</a>
+            <a href="/peserta" class="btn btn-parchment" id="heroBtnPeserta">Buka Kartu / Login Peserta</a>
+          </div>
+        </div>
+
+        <!-- Standalone 3D Isometric Competition Island & Playful Mascots SVG -->
+        <div class="hero-3d-stage" aria-hidden="true">
+          <div class="hero-3d-glow"></div>
+          <svg class="hero-3d-svg" viewBox="0 0 460 360" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="isoTop" x1="120" y1="110" x2="350" y2="270" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#34D399"/>
+                <stop offset="0.55" stop-color="#06B6D4"/>
+                <stop offset="1" stop-color="#2563EB"/>
+              </linearGradient>
+              <linearGradient id="isoSideLeft" x1="80" y1="200" x2="230" y2="320" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#4338CA"/>
+                <stop offset="1" stop-color="#1E1B4B"/>
+              </linearGradient>
+              <linearGradient id="isoSideRight" x1="230" y1="240" x2="395" y2="300" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#312E81"/>
+                <stop offset="1" stop-color="#0F172A"/>
+              </linearGradient>
+              <linearGradient id="podiumGrad" x1="180" y1="70" x2="270" y2="175" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#A78BFA"/>
+                <stop offset="1" stop-color="#5B21B6"/>
+              </linearGradient>
+              <linearGradient id="trophyGold" x1="200" y1="30" x2="255" y2="115" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#FEF08A"/>
+                <stop offset="0.5" stop-color="#FBBF24"/>
+                <stop offset="1" stop-color="#D97706"/>
+              </linearGradient>
+              <linearGradient id="waterPool" x1="130" y1="185" x2="255" y2="265" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#67E8F9"/>
+                <stop offset="1" stop-color="#0284C7"/>
+              </linearGradient>
+              <radialGradient id="orangeMascot" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(120 150) rotate(60) scale(48)">
+                <stop stop-color="#FDBA74"/>
+                <stop offset="0.7" stop-color="#F59E0B"/>
+                <stop offset="1" stop-color="#B45309"/>
+              </radialGradient>
+              <radialGradient id="purpleMascot" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(335 160) rotate(65) scale(46)">
+                <stop stop-color="#E9D5FF"/>
+                <stop offset="0.65" stop-color="#8B5CF6"/>
+                <stop offset="1" stop-color="#4C1D95"/>
+              </radialGradient>
+              <radialGradient id="cyanOrbFloat" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(355 82) rotate(50) scale(28)">
+                <stop stop-color="#A5F3FC"/>
+                <stop offset="0.7" stop-color="#06B6D4"/>
+                <stop offset="1" stop-color="#0E7490"/>
+              </radialGradient>
+            </defs>
+
+            <!-- Soft Floating Shadow -->
+            <ellipse cx="230" cy="332" rx="150" ry="18" fill="rgba(5, 8, 25, 0.55)"/>
+
+            <!-- Isometric Floating Base Sides -->
+            <path d="M72 205L230 286V318L72 237V205Z" fill="url(#isoSideLeft)"/>
+            <path d="M388 205L230 286V318L388 237V205Z" fill="url(#isoSideRight)"/>
+
+            <!-- Isometric Top Turf & Arena Deck -->
+            <path d="M230 124L388 205L230 286L72 205L230 124Z" fill="url(#isoTop)"/>
+            <path d="M230 132L372 205L230 278L88 205L230 132Z" fill="rgba(255,255,255,0.08)"/>
+
+            <!-- Glowing Cyan Pool Strip on Arena -->
+            <path d="M126 212L194 176L242 202L174 238L126 212Z" fill="url(#waterPool)" opacity="0.92"/>
+            <path d="M142 212L188 188" stroke="#ECFEFF" stroke-width="3" stroke-linecap="round" opacity="0.75"/>
+
+            <!-- Level Stepping Stones (1, 2, 3) -->
+            <g>
+              <ellipse cx="235" cy="248" rx="19" ry="11" fill="#FDE047"/>
+              <ellipse cx="235" cy="245" rx="16" ry="9" fill="#FFFBEB"/>
+              <text x="235" y="248" text-anchor="middle" fill="#B45309" font-size="11" font-weight="800">1</text>
+
+              <ellipse cx="282" cy="224" rx="19" ry="11" fill="#67E8F9"/>
+              <ellipse cx="282" cy="221" rx="16" ry="9" fill="#ECFEFF"/>
+              <text x="282" y="224" text-anchor="middle" fill="#0369A1" font-size="11" font-weight="800">2</text>
+
+              <ellipse cx="322" cy="202" rx="19" ry="11" fill="#C4B5FD"/>
+              <ellipse cx="322" cy="199" rx="16" ry="9" fill="#F5F3FF"/>
+              <text x="322" y="202" text-anchor="middle" fill="#5B21B6" font-size="11" font-weight="800">3</text>
+            </g>
+
+            <!-- Central 3D Podium Building -->
+            <path d="M178 135L230 108L282 135V182L230 209L178 182V135Z" fill="url(#podiumGrad)"/>
+            <path d="M178 135L230 162L282 135L230 108L178 135Z" fill="#DDD6FE"/>
+            <path d="M230 162V209L282 182V135L230 162Z" fill="#4C1D95" opacity="0.65"/>
+
+            <!-- 3D Shining Championship Trophy -->
+            <g transform="translate(0, -4)">
+              <path d="M204 54H256V78C256 93 244.5 104 230 104C215.5 104 204 93 204 78V54Z" fill="url(#trophyGold)"/>
+              <ellipse cx="230" cy="54" rx="26" ry="7" fill="#FEF08A"/>
+              <path d="M204 60H195C190 60 189 72 195 79C198 82 203 83 205 83" stroke="#FBBF24" stroke-width="5" stroke-linecap="round" fill="none"/>
+              <path d="M256 60H265C270 60 271 72 265 79C262 82 257 83 255 83" stroke="#F59E0B" stroke-width="5" stroke-linecap="round" fill="none"/>
+              <rect x="224" y="102" width="12" height="18" rx="3" fill="#F59E0B"/>
+              <rect x="210" y="118" width="40" height="10" rx="5" fill="#FDE047"/>
+              <!-- Specular shine on Trophy -->
+              <path d="M214 64C214 74 217 84 221 90" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" opacity="0.7"/>
+            </g>
+
+            <!-- Playful 3D Orange Mascot (Left, Inspired by Reference Screen 1 Monster) -->
+            <g transform="translate(0, 6)">
+              <path d="M96 184C96 156 112 140 132 140C152 140 168 156 168 184C168 198 154 202 132 202C110 202 96 198 96 184Z" fill="url(#orangeMascot)"/>
+              <!-- Little Horns/Ears -->
+              <circle cx="110" cy="143" r="8" fill="#F59E0B"/>
+              <circle cx="154" cy="143" r="8" fill="#F59E0B"/>
+              <!-- Glossy Eyes -->
+              <circle cx="121" cy="166" r="6.5" fill="#FFFFFF"/>
+              <circle cx="143" cy="166" r="6.5" fill="#FFFFFF"/>
+              <circle cx="122" cy="166" r="3.2" fill="#0F172A"/>
+              <circle cx="144" cy="166" r="3.2" fill="#0F172A"/>
+              <circle cx="123" cy="164.5" r="1.2" fill="#FFFFFF"/>
+              <circle cx="145" cy="164.5" r="1.2" fill="#FFFFFF"/>
+              <!-- Happy Smile -->
+              <path d="M123 178C127 184 137 184 141 178" stroke="#78350F" stroke-width="3" stroke-linecap="round"/>
+              <!-- Holding Mini Number Tile "1" -->
+              <rect x="82" y="160" width="22" height="24" rx="6" transform="rotate(-12 82 160)" fill="#ECFEFF" stroke="#22D3EE" stroke-width="2"/>
+              <text x="95" y="177" text-anchor="middle" fill="#0284C7" font-size="13" font-weight="800" transform="rotate(-12 95 177)">A+</text>
+            </g>
+
+            <!-- Playful 3D Purple Flying Buddy (Right, Inspired by Reference Screen 1 & 2) -->
+            <g>
+              <circle cx="342" cy="152" r="24" fill="url(#purpleMascot)"/>
+              <!-- Wings -->
+              <path d="M318 148C304 140 302 156 318 158Z" fill="#C4B5FD"/>
+              <path d="M366 148C380 140 382 156 366 158Z" fill="#C4B5FD"/>
+              <!-- Eyes -->
+              <circle cx="334" cy="150" r="5" fill="#FFFFFF"/>
+              <circle cx="350" cy="150" r="5" fill="#FFFFFF"/>
+              <circle cx="334" cy="150" r="2.5" fill="#1E1B4B"/>
+              <circle cx="350" cy="150" r="2.5" fill="#1E1B4B"/>
+              <path d="M337 160C340 163 344 163 347 160" stroke="#F5F3FF" stroke-width="2.2" stroke-linecap="round"/>
+            </g>
+
+            <!-- Floating 3D Stars & Sparkles -->
+            <path d="M122 86L127 98L140 99L130 107L133 120L122 113L111 120L114 107L104 99L117 98L122 86Z" fill="#FDE047"/>
+            <path d="M352 72L356 81L366 82L358 89L361 98L352 93L343 98L346 89L338 82L348 81L352 72Z" fill="#22D3EE"/>
+            <circle cx="164" cy="64" r="7" fill="url(#cyanOrbFloat)"/>
+            <circle cx="294" cy="70" r="5" fill="#F472B6"/>
+            <path d="M302 104L312 104L305 114L314 114L299 128L304 117L295 117L302 104Z" fill="#FBBF24"/>
+          </svg>
         </div>
       </div>
 
-      <div class="hero-ledger">
+      <!-- Open Schedule & Countdown Strip (No Card Wrapping) -->
+      <div class="open-schedule-strip">
         <div class="ledger-head">
-          <h3>Papan Jadwal &amp; Countdown Event</h3>
-          <span class="badge badge-brass" id="ledgerParticipantBadge">0 Terdaftar</span>
+          <h3>
+            <span style="display:inline-flex;width:10px;height:10px;border-radius:50%;background:var(--cyan);box-shadow:0 0 10px var(--cyan);"></span>
+            Jadwal &amp; Hitung Mundur Pendaftaran Event Utama
+          </h3>
+          <span style="font-size: 12px; color: var(--text-muted);">
+            Aturan: 1 siswa hanya mengikuti 1 cabang per event &bull; Otomatis terkunci saat batas waktu tiba
+          </span>
         </div>
         <div class="ledger-list" id="heroLedgerList"></div>
-        <div style="margin-top: 10px; font-size: 11.5px; color: var(--muted);">
-          * Aturan: 1 siswa hanya dapat mengikuti 1 cabang lomba per event utama &amp; terkunci otomatis saat jadwal tutup tiba.
-        </div>
       </div>
     </div>
   </section>
 
-  <!-- Main Content: Catalog Explorer & Bracket -->
+  <!-- Main Open Content: 3 Main Events + Competition Explorer -->
   <main class="container">
     <section class="workspace-section" id="workspaceSection">
+      <div class="open-section-head">
+        <div>
+          <div class="issue-tag">Pilih Arena Event</div>
+          <h3>Tiga Event Besar &amp; Kisi-Kisi Cabang Lomba</h3>
+          <p>Klik ikon event di bawah untuk melihat daftar perlombaan, petunjuk teknis resmi, dan kuota terkini.</p>
+        </div>
+      </div>
+
+      <!-- 3 Main Events as Standalone Circular 3D Orbs Strip -->
       <div class="event-ribbon" id="eventRibbon"></div>
 
+      <!-- Open Split Workspace (No Card Wrapper) -->
       <div class="split-workspace">
-        <!-- Left Index -->
         <aside class="catalog-panel">
           <div class="catalog-head">
             <h3 id="catalogEventTitle">Daftar Cabang Lomba</h3>
-            <div id="catalogEventMeta" style="font-size: 12px; color: var(--muted); margin-top: 3px;"></div>
+            <div id="catalogEventMeta" style="font-size: 12.5px; color: var(--cyan); margin-top: 4px; font-weight: 600;"></div>
           </div>
           <div class="catalog-list" id="catalogList"></div>
         </aside>
 
-        <!-- Right Info & Juknis Panel (Redirects to dedicated /daftar page for registration) -->
         <div class="detail-panel" id="detailPanel">
           <div class="detail-header">
             <div>
-              <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 6px; flex-wrap: wrap;">
+              <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 10px; flex-wrap: wrap;">
                 <span class="badge badge-brass" id="wsEventBadge">EVENT</span>
                 <span class="badge badge-brass" id="wsCatBadge">KATEGORI</span>
                 <span class="badge badge-open" id="wsStatusBadge">AVAILABLE</span>
               </div>
               <h3 id="wsCompTitle">Pilih Cabang Lomba</h3>
             </div>
-            <div style="font-size: 12px; color: var(--muted); font-weight: 600;" id="wsCountLabel"></div>
+            <div style="font-size: 13px; color: var(--cyan); font-weight: 700;" id="wsCountLabel"></div>
           </div>
 
           <div class="detail-tabs">
@@ -112,11 +295,11 @@
           <div class="detail-body">
             <div id="wsPanelJuknis">
               <div class="alert-box alert-hunter">
-                <strong>Informasi Kisi-Kisi:</strong> Baca aturan teknis di bawah ini. Untuk mendaftar dan mendapatkan Kartu Lomba Digital secara otomatis, klik tombol pendaftaran di bawah.
+                <strong>Informasi Teknis:</strong> Pelajari juknis resmi di bawah ini sebelum mendaftar dan mendapatkan Kartu Peserta Digital Anda secara otomatis.
               </div>
               <div class="juknis-paper" id="wsJuknisContent"></div>
-              <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                <a href="/daftar" id="btnGoToDedicatedDaftar" class="btn btn-hunter" style="flex: 1; padding: 12px;">
+              <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                <a href="/daftar" id="btnGoToDedicatedDaftar" class="btn btn-hunter" style="flex: 1; padding: 13px 22px;">
                   Ikuti Lomba Ini di Halaman Pendaftaran Khusus &rarr;
                 </a>
                 <button type="button" class="btn btn-parchment" onclick="switchHomeCompTab('bracket')">
@@ -126,9 +309,9 @@
             </div>
 
             <div id="wsPanelBracket" style="display: none;">
-              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 8px;">
-                <span style="font-size: 13px; color: var(--muted);">Bagan langsung cabang <strong id="wsBracketTitle"></strong></span>
-                <button type="button" class="btn btn-parchment btn-sm" onclick="syncMainBracketToCurrent()">Buka di Tampilan Penuh &darr;</button>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 10px;">
+                <span style="font-size: 13.5px; color: var(--text-secondary);">Pratinjau langsung bagan <strong style="color:#fff;" id="wsBracketTitle"></strong></span>
+                <button type="button" class="btn btn-parchment btn-sm" onclick="syncMainBracketToCurrent()">Buka di Bagian Penuh &darr;</button>
               </div>
               <div id="wsBracketContainer"></div>
             </div>
@@ -137,17 +320,18 @@
       </div>
     </section>
 
-    <!-- Full-Width Homepage Tournament Bracket Showcase -->
+    <!-- Open Full-Width Tournament Bracket Showcase -->
     <section class="bracket-showcase" id="bracketSection">
       <div class="bracket-bar">
         <div>
-          <h3 class="serif" style="font-size: 24px; color: var(--hunter-deep);">Bagan Turnamen &amp; Perkembangan Juara</h3>
-          <p style="font-size: 13px; color: var(--muted);" id="mainBracketSub">
-            Siswa dapat memantau bagan setiap cabang. Panitia dapat mengacak (Shuffle) dan memajukan pemenang.
+          <div class="issue-tag">Turnamen Langsung</div>
+          <h3 style="font-size: clamp(24px, 3vw, 30px); font-weight: 800; color: #FFFFFF;">Bagan Pertandingan &amp; Juara</h3>
+          <p style="font-size: 13.5px; color: var(--text-secondary); margin-top: 4px;" id="mainBracketSub">
+            Pantau alur pertandingan setiap cabang secara terbuka. Geser ke samping bila menggunakan smartphone.
           </p>
         </div>
-        <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
-          <select id="mainBracketSelect" class="form-control" style="width: auto; min-width: 250px;" onchange="renderMainBracket()"></select>
+        <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
+          <select id="mainBracketSelect" class="form-control" style="width: auto; min-width: 260px;" onchange="renderMainBracket()"></select>
           <div id="panitiaBracketToolbar" style="display: none; gap: 8px; flex-wrap: wrap;">
             <button class="btn btn-hunter btn-sm" onclick="panitiaBracketAction('shuffle')">Shuffle (Acak Bagan)</button>
             <button class="btn btn-parchment btn-sm" onclick="panitiaBracketAction('reset')">Reset Bagan</button>
@@ -167,7 +351,7 @@
       </div>
       <div class="modal-body">
         <div class="alert-box alert-brass">
-          <strong>Akses Terbatas:</strong> Hanya panitia yang memiliki <strong>ID Unik Panitia</strong> resmi yang dapat membuka kontrol perlombaan, pengacakan bagan, dan rekap Excel.
+          <strong>Akses Terbatas:</strong> Masuk menggunakan <strong>ID Unik Panitia</strong> resmi untuk membuka Dashboard Terbuka Panitia, kontrol event, acak bagan, dan ekspor Excel.
         </div>
         <form onsubmit="submitPanitiaLogin(event)">
           <div class="form-group">
@@ -178,98 +362,179 @@
             <label>Password Panitia</label>
             <input type="password" id="panitiaPwInput" class="form-control" placeholder="Masukkan password panitia" required>
           </div>
-          <button type="submit" class="btn btn-hunter" style="width: 100%; padding: 11px;">
-            Verifikasi &amp; Masuk Ruang Kontrol
+          <button type="submit" class="btn btn-hunter" style="width: 100%; padding: 12px;">
+            Verifikasi &amp; Masuk Dashboard Panitia
           </button>
         </form>
       </div>
     </div>
   </div>
 
-  <!-- Modal: Panitia Control Center -->
-  <div class="modal-overlay" id="panitiaDashModal">
-    <div class="modal-box wide">
-      <div class="modal-head">
+  <!-- Full-Screen Open Panitia Workspace with Minimalist Sidebar -->
+  <div class="modal-overlay panitia-workspace-overlay" id="panitiaDashModal">
+    <div class="panitia-shell">
+      <!-- Minimalist Sidebar Navigation -->
+      <aside class="panitia-sidebar">
         <div>
-          <h3>Ruang Kontrol Panitia &mdash; Ayo Lomba</h3>
-          <span id="panitiaIdentityLabel" style="font-size: 12px; color: var(--hunter-mid); font-weight: 700;"></span>
-        </div>
-        <div style="display: flex; gap: 8px; align-items: center;">
-          <button class="btn btn-danger btn-sm" onclick="logoutPanitia()">Keluar Panitia</button>
-          <button class="close-x" onclick="closeModal('panitiaDashModal')">&times;</button>
-        </div>
-      </div>
-      <div class="modal-body">
-        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 18px;">
-          <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-            <button class="btn btn-hunter btn-sm" onclick="openModal('addCompModal')">+ Tambah Cabang Lomba</button>
-            <button class="btn btn-parchment btn-sm" onclick="openModal('addPanitiaModal')">+ Tambah Akun Panitia Baru</button>
-            <button class="btn btn-parchment btn-sm" onclick="closeModal('panitiaDashModal'); scrollToEl('bracketSection');">Kelola &amp; Acak Bagan</button>
+          <div class="panitia-sidebar-brand">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+              <div class="brand-crest-3d" style="width:36px;height:36px;border-radius:10px;">
+                <span style="font-weight:800;font-size:13px;color:#07132B;">AL</span>
+              </div>
+              <div>
+                <div style="font-weight:800;font-size:15px;color:#fff;">Panel Panitia</div>
+                <div style="font-size:11px;color:var(--cyan);">Open Control Center</div>
+              </div>
+            </div>
+            <div id="panitiaIdentityLabel" style="font-size:11.5px;color:var(--lavender);margin-top:6px;"></div>
           </div>
-          <div style="display: flex; gap: 8px; align-items: center;">
-            <select id="excelEventFilter" class="form-control" style="width: auto; padding: 6px 10px; font-size: 12px;">
+
+          <div class="panitia-nav-list">
+            <button type="button" class="panitia-nav-btn active" data-psec="all" onclick="switchPanitiaSection('all', this)">
+              <span>🏠</span> Semua Ringkasan
+            </button>
+            <button type="button" class="panitia-nav-btn" data-psec="events" onclick="switchPanitiaSection('events', this)">
+              <span>⚡</span> Kelola Event &amp; Jadwal
+            </button>
+            <button type="button" class="panitia-nav-btn" data-psec="comps" onclick="switchPanitiaSection('comps', this)">
+              <span>📘</span> Cabang &amp; Juknis
+            </button>
+            <button type="button" class="panitia-nav-btn" data-psec="participants" onclick="switchPanitiaSection('participants', this)">
+              <span>👥</span> Data Peserta &amp; Terbaru
+            </button>
+            <button type="button" class="panitia-nav-btn" onclick="closeModal('panitiaDashModal'); scrollToEl('bracketSection');">
+              <span>🏆</span> Kelola Bagan &amp; Hasil
+            </button>
+            <button type="button" class="panitia-nav-btn" data-psec="admins" onclick="switchPanitiaSection('admins', this)">
+              <span>🛡️</span> Akun Panitia
+            </button>
+          </div>
+        </div>
+
+        <div style="padding-top:16px;border-top:1px solid var(--line-soft);display:flex;flex-direction:column;gap:8px;">
+          <button type="button" class="btn btn-parchment btn-sm" onclick="closeModal('panitiaDashModal')">Tutup Dashboard</button>
+          <button type="button" class="btn btn-danger btn-sm" onclick="logoutPanitia()">Keluar Panitia</button>
+        </div>
+      </aside>
+
+      <!-- Open Workspace Main Content -->
+      <div class="panitia-main">
+        <div class="panitia-topbar">
+          <div>
+            <div class="issue-tag" style="margin-bottom:4px;">Kontrol Real-Time</div>
+            <h3 style="font-size:24px;font-weight:800;color:#fff;">Ruang Kontrol Panitia &mdash; Ayo Lomba</h3>
+          </div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+            <button class="btn btn-hunter btn-sm" onclick="openModal('addCompModal')">+ Cabang Baru</button>
+            <button class="btn btn-parchment btn-sm" onclick="openModal('addPanitiaModal')">+ Panitia Baru</button>
+            <select id="excelEventFilter" class="form-control" style="width:auto;padding:7px 12px;font-size:12px;">
               <option value="">Semua Event (Excel)</option>
               <option value="bulan-bahasa">Bulan Bahasa</option>
               <option value="porak">PORAK</option>
               <option value="17-agustus">17 Agustus</option>
             </select>
-            <button class="btn btn-hunter btn-sm" onclick="downloadExcel()">Download Excel (.xlsx)</button>
+            <button class="btn btn-outline btn-sm" onclick="downloadExcel()">Ekspor Excel (.xlsx)</button>
+            <button class="close-x" onclick="closeModal('panitiaDashModal')" title="Tutup Panel">&times;</button>
           </div>
         </div>
 
-        <h4 class="serif" style="font-size: 16px; color: var(--hunter-deep); margin-bottom: 10px;">
-          1. Status Available/Locked &amp; Schedule Lock (3 Event Utama)
-        </h4>
-        <div class="panitia-grid" id="panitiaEventsControl"></div>
+        <!-- Open Statistics Strip (No Card Boxes) -->
+        <div class="panitia-open-stats" id="panitiaOpenStats">
+          <div class="p-stat-open">
+            <div class="p-stat-orb orb-porak">👥</div>
+            <div>
+              <div class="p-stat-num" id="pStatParticipants">0</div>
+              <div class="p-stat-lbl">Total Peserta Terdaftar</div>
+            </div>
+          </div>
+          <div class="p-stat-open">
+            <div class="p-stat-orb orb-bulan-bahasa">⚡</div>
+            <div>
+              <div class="p-stat-num" id="pStatActiveEvents">0 / 3</div>
+              <div class="p-stat-lbl">Event Aktif Terbuka</div>
+            </div>
+          </div>
+          <div class="p-stat-open">
+            <div class="p-stat-orb orb-17-agustus">🎯</div>
+            <div>
+              <div class="p-stat-num" id="pStatComps">0</div>
+              <div class="p-stat-lbl">Cabang Perlombaan</div>
+            </div>
+          </div>
+          <div class="p-stat-open">
+            <div class="p-stat-orb" style="background:linear-gradient(145deg,#34D399,#059669);">🏆</div>
+            <div>
+              <div class="p-stat-num" id="pStatChampions">0</div>
+              <div class="p-stat-lbl">Juara Ditetapkan</div>
+            </div>
+          </div>
+        </div>
 
-        <h4 class="serif" style="font-size: 16px; color: var(--hunter-deep); margin: 16px 0 10px;">
-          2. Kelola Cabang Lomba &amp; Ubah Kisi-Kisi / Juknis
-        </h4>
-        <div id="panitiaCompsControl" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 10px; margin-bottom: 20px;"></div>
-
-        <div style="display: flex; justify-content: space-between; align-items: center; margin: 16px 0 8px;">
-          <h4 class="serif" style="font-size: 16px; color: var(--hunter-deep);">
-            3. Rekap Data Peserta (Tanpa NIS/NISN)
+        <!-- Section 1: Pengelolaan Event & Jadwal -->
+        <div class="panitia-section" data-psec-block="events" style="margin-bottom:36px;">
+          <h4 style="font-size:17px;font-weight:800;color:var(--cyan);margin-bottom:14px;">
+            1. Pengelolaan Event &amp; Kunci Jadwal (3 Event Utama)
           </h4>
-          <span id="panitiaTotalRows" style="font-size: 12px; color: var(--muted); font-weight: 700;"></span>
-        </div>
-        <div class="table-wrap" style="margin-bottom: 22px;">
-          <table class="data-table">
-            <thead>
-              <tr>
-                <th>ID User</th>
-                <th>Password</th>
-                <th>Nama Siswa</th>
-                <th>Kelas</th>
-                <th>Event</th>
-                <th>Cabang Lomba</th>
-                <th>Kontak</th>
-                <th>Aksi</th>
-              </tr>
-            </thead>
-            <tbody id="panitiaParticipantsBody"></tbody>
-          </table>
+          <div class="panitia-grid" id="panitiaEventsControl"></div>
         </div>
 
-        <div style="display: flex; justify-content: space-between; align-items: center; margin: 16px 0 8px;">
-          <h4 class="serif" style="font-size: 16px; color: var(--hunter-deep);">
-            4. Daftar Akun Panitia Terdaftar
+        <!-- Section 2: Cabang Perlombaan & Juknis + Hasil Pertandingan -->
+        <div class="panitia-section" data-psec-block="comps" style="margin-bottom:36px;">
+          <h4 style="font-size:17px;font-weight:800;color:var(--cyan);margin-bottom:14px;">
+            2. Cabang Perlombaan, Status Hasil &amp; Ubah Juknis
           </h4>
-          <button class="btn btn-hunter btn-sm" onclick="openModal('addPanitiaModal')">+ Tambah Panitia Baru</button>
+          <div id="panitiaCompsControl" style="display:grid;grid-template-columns:repeat(auto-fit, minmax(250px, 1fr));gap:20px;"></div>
         </div>
-        <div class="table-wrap">
-          <table class="data-table">
-            <thead>
-              <tr>
-                <th>Username / ID Panitia</th>
-                <th>Nama Panitia</th>
-                <th>Jabatan / Role</th>
-                <th>Password</th>
-                <th>Aksi</th>
-              </tr>
-            </thead>
-            <tbody id="panitiaAdminsTableBody"></tbody>
-          </table>
+
+        <!-- Section 3: Clean Open Table of Participants & Latest Registrations -->
+        <div class="panitia-section" data-psec-block="participants" style="margin-bottom:36px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px;">
+            <h4 style="font-size:17px;font-weight:800;color:var(--cyan);">
+              3. Rekap Pendaftaran Terbaru &amp; Seluruh Peserta (Tanpa NIS/NISN)
+            </h4>
+            <span id="panitiaTotalRows" style="font-size:12.5px;color:var(--lavender);font-weight:700;"></span>
+          </div>
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>ID User</th>
+                  <th>Password</th>
+                  <th>Nama Siswa / Tim</th>
+                  <th>Kelas</th>
+                  <th>Event</th>
+                  <th>Cabang Lomba</th>
+                  <th>Kontak</th>
+                  <th>Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="panitiaParticipantsBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Section 4: Akun Panitia -->
+        <div class="panitia-section" data-psec-block="admins">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px;">
+            <h4 style="font-size:17px;font-weight:800;color:var(--cyan);">
+              4. Daftar Akun Panitia Terdaftar
+            </h4>
+            <button class="btn btn-hunter btn-sm" onclick="openModal('addPanitiaModal')">+ Tambah Panitia Baru</button>
+          </div>
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Username / ID Panitia</th>
+                  <th>Nama Panitia</th>
+                  <th>Jabatan / Role</th>
+                  <th>Password</th>
+                  <th>Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="panitiaAdminsTableBody"></tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>
@@ -300,22 +565,22 @@
             <label>Kategori Peserta</label>
             <input type="text" id="addCompCategory" class="form-control" value="Individu">
           </div>
-          <div class="form-group" style="background: #F4F1EA; padding: 10px; border-radius: 6px;">
+          <div class="form-group group-open-panel">
             <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; margin-bottom: 6px;">
               <input type="checkbox" id="addCompIsGroup" onchange="toggleAddCompGroup(this.checked)">
               <strong>Lomba Beregu / Berkelompok (Wajib Nama Tim)</strong>
             </label>
-            <div id="addCompGroupMinWrapper" style="display: none; margin-top: 8px;">
+            <div id="addCompGroupMinWrapper" style="display: none; margin-top: 10px;">
               <label style="font-size: 12px; font-weight: 600;">Minimal Pendaftar dalam 1 Kelompok (termasuk Ketua):</label>
               <input type="number" id="addCompMinMembers" class="form-control" min="2" max="50" value="2">
-              <small style="color: var(--muted); font-size: 11px;">Contoh: Futsal min 5 orang, Tarik Tambang min 8 orang.</small>
+              <small style="color: var(--text-muted); font-size: 11px;">Contoh: Futsal min 5 orang, Tarik Tambang min 8 orang.</small>
             </div>
           </div>
           <div class="form-group">
             <label>Kisi-Kisi &amp; Juknis Lomba *</label>
             <textarea id="addCompJuknis" class="form-control" rows="5" placeholder="Tuliskan aturan teknis, durasi, dan kriteria penilaian..." required></textarea>
           </div>
-          <button type="submit" class="btn btn-hunter" style="width: 100%;">Simpan Cabang Lomba</button>
+          <button type="submit" class="btn btn-hunter" style="width: 100%; padding: 12px;">Simpan Cabang Lomba</button>
         </form>
       </div>
     </div>
@@ -335,7 +600,7 @@
             <label>Isi Kisi-Kisi / Juknis</label>
             <textarea id="editJuknisTextarea" class="form-control" rows="8" required></textarea>
           </div>
-          <button type="submit" class="btn btn-hunter" style="width: 100%;">Simpan Perubahan</button>
+          <button type="submit" class="btn btn-hunter" style="width: 100%; padding: 12px;">Simpan Perubahan</button>
         </form>
       </div>
     </div>
@@ -350,7 +615,7 @@
       </div>
       <div class="modal-body">
         <div class="alert-box alert-brass">
-          Akun panitia yang ditambahkan di sini akan langsung dapat digunakan untuk login ke Ruang Kontrol.
+          Akun panitia yang ditambahkan di sini akan langsung aktif untuk mengelola seluruh kompetisi sekolah.
         </div>
         <form onsubmit="submitNewPanitiaAdmin(event)">
           <div class="form-group">
@@ -369,7 +634,7 @@
             <label>Password Akun Panitia *</label>
             <input type="password" id="newPanitiaPw" class="form-control mono" placeholder="Tentukan password panitia" required>
           </div>
-          <button type="submit" class="btn btn-hunter" style="width: 100%; padding: 11px;">
+          <button type="submit" class="btn btn-hunter" style="width: 100%; padding: 12px;">
             Simpan &amp; Aktifkan Akun Panitia
           </button>
         </form>
@@ -381,12 +646,11 @@
 
   <footer>
     <div class="container">
-      <strong class="serif">Ayo Lomba</strong> &mdash; Katalog &amp; Portal Perlombaan Sekolah Berbasis Python
-      <div style="font-size: 11.5px; margin-top: 3px;">Editorial Warm Cream &amp; Hunter Green Edition &bull; Rekap Excel Terpusat</div>
+      <strong>Ayo Lomba</strong> &mdash; Arena &amp; Portal Perlombaan Sekolah Modern
+      <div style="font-size: 12px; margin-top: 4px;">Open Interactive Interface &bull; Single Registration &amp; Auto-Login Peserta</div>
     </div>
   </footer>
 
   <script src="/static/js/app.js"></script>
-  <script src="/public/js/app.js"></script>
 </body>
 </html>
